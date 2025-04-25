@@ -1,5 +1,7 @@
 package com.side.football_project.domain.team.entity;
 
+import com.side.football_project.domain.match.domain.Match;
+import com.side.football_project.domain.reservation.domain.Reservation;
 import com.side.football_project.domain.user.entity.User;
 import com.side.football_project.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -28,6 +30,14 @@ public class Team extends BaseEntity {
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> teamMembers = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "match_id")
+    private Match match;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
+
     @Builder
     public Team(String teamName, int headCount, List<TeamMember> teamMembers) {
         this.teamName = teamName;
@@ -52,5 +62,14 @@ public class Team extends BaseEntity {
     public void addTeamMember(TeamMember member) {
         this.teamMembers.add(member);
         member.addTeam(this);
+    }
+
+    public void addReservation(Reservation reservation) {
+        this.reservation = reservation;
+    }
+
+    public void applyMatch (Match match) {
+        this.match = match;
+        match.addMatchTeam(this);
     }
 }

@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ReservationErrorCode implements ExceptionType {
 
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다.");
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
+    RESERVATION_NOT_CREATED(HttpStatus.BAD_REQUEST, "예약 생성에 실패했습니다."),;
 
     private final HttpStatus httpStatus;
     private final String message;

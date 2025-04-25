@@ -1,9 +1,7 @@
 package com.side.football_project.domain.match.controller;
 
 
-import com.side.football_project.domain.match.dto.MatchRatingRequestDto;
-import com.side.football_project.domain.match.dto.MatchRequestDto;
-import com.side.football_project.domain.match.dto.MatchResponseDto;
+import com.side.football_project.domain.match.dto.*;
 import com.side.football_project.domain.match.service.MatchUserService;
 import com.side.football_project.domain.match.service.RandomService;
 import com.side.football_project.domain.user.entity.User;
@@ -52,6 +50,13 @@ public class MatchController {
     public ResponseEntity<Void> joinMatch(@RequestParam Long userId) {
         randomService.joinMatch(userId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/team")
+    public ResponseEntity<TeamMatchResponseDto> teamMatch(@RequestBody TeamMatchRequestDto requestDto,
+                                                       @AuthenticationPrincipal UserDetails userDetails) {
+        User user = UserDetailsUtil.getUser(userDetails);
+        return ResponseEntity.ok(matchUserService.teamMatch(requestDto, user));
     }
 
     @PostMapping("/fill/{stadiumId}")

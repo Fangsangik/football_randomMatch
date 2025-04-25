@@ -5,6 +5,9 @@ import com.side.football_project.global.common.exception.CustomException;
 import com.side.football_project.global.common.exception.type.TeamErrorCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Arrays;
+import java.util.List;
+
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
     default Team findByTeamIdOrElseThrow(Long teamId) {

@@ -2,11 +2,11 @@ package com.side.football_project.domain.match.service;
 
 import com.side.football_project.domain.match.domain.Match;
 import com.side.football_project.domain.match.domain.MatchUser;
-import com.side.football_project.domain.match.dto.MatchRatingRequestDto;
-import com.side.football_project.domain.match.dto.MatchRequestDto;
-import com.side.football_project.domain.match.dto.MatchResponseDto;
+import com.side.football_project.domain.match.dto.*;
 import com.side.football_project.domain.match.repository.MatchRepository;
 import com.side.football_project.domain.match.repository.MatchUserRepository;
+import com.side.football_project.domain.team.entity.Team;
+import com.side.football_project.domain.team.service.TeamService;
 import com.side.football_project.domain.user.entity.User;
 import com.side.football_project.domain.user.service.UserService;
 import com.side.football_project.domain.user.type.UserRole;
@@ -30,15 +30,14 @@ public class MatchUserServiceImpl implements MatchUserService {
     private final MatchRepository matchRepository;
     private final UserService userService;
     private final ReservationService reservationService;
+    private final TeamService teamService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public MatchResponseDto createMatch (MatchRequestDto requestDto, User user) {
 
-        if (!UserRole.ADMIN.equals(user.getRole())) {
-            throw new CustomException(UserErrorCode.NOT_ALLOWED);
-        }
+        validateUserRole(user);
 
         ReservationResponseDto reservation = reservationService.findReservation(requestDto.getReservationId());
 
@@ -65,6 +64,33 @@ public class MatchUserServiceImpl implements MatchUserService {
         return MatchResponseDto.toDto(match);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
+    @Override
+    public TeamMatchResponseDto teamMatch (TeamMatchRequestDto requestDto, User user) {
+
+        validateUserRole(user);
+
+        ReservationResponseDto reservation = reservationService.findReservation(requestDto.getReservationId());
+
+        Match match = Match.builder()
+                .matchName(requestDto.getMatchName())
+                .reservation(ReservationResponseDto.toDto(reservation))
+                .stadium(reservation.getStadium())
+                .isCompleted(false)
+                .build();
+
+        List<Long> matchTeamIds = requestDto.getTeamIds();
+        List<Team> matchTeams = teamService.findTeamEntitiesByIds(matchTeamIds);
+
+        matchTeams.forEach(match::addMatchTeam);
+
+        matchRepository.save(match);
+
+        return TeamMatchResponseDto.fromEntity(match);
+
+    }
+
     /**
      * 경기 종료 후 평점 등록
      */
@@ -73,9 +99,7 @@ public class MatchUserServiceImpl implements MatchUserService {
     @Override
     public void submitMatchRatings(Long matchId, User user, List<MatchRatingRequestDto> ratings) {
 
-        if (!UserRole.ADMIN.equals(user.getRole())) {
-            throw new CustomException(UserErrorCode.NOT_ALLOWED);
-        }
+        validateUserRole(user);
 
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new IllegalArgumentException("경기를 찾을 수 없습니다."));
@@ -111,9 +135,7 @@ public class MatchUserServiceImpl implements MatchUserService {
     @Override
     public void completeMatch(Long matchId, User user) {
 
-        if (!UserRole.ADMIN.equals(user.getRole())) {
-            throw new CustomException(UserErrorCode.NOT_ALLOWED);
-        }
+        validateUserRole(user);
 
         boolean isMatchCompleted = matchUserRepository.existsByMatchId(matchId);
 
@@ -129,6 +151,12 @@ public class MatchUserServiceImpl implements MatchUserService {
         List<MatchUser> matchById = matchUserRepository.findMatchById(match.getId());
         for (MatchUser matchUser : matchById) {
             userService.updateUserTier(matchUser.getUser().getId(), user);
+        }
+    }
+
+    private static void validateUserRole(User user) {
+        if (!UserRole.ADMIN.equals(user.getRole())) {
+            throw new CustomException(UserErrorCode.NOT_ALLOWED);
         }
     }
 }
