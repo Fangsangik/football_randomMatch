@@ -92,6 +92,11 @@ public class TeamServiceImpl implements TeamService {
         teamMemberRepository.save(team);
     }
 
+    @Transactional(readOnly = true)
+    public List<Team> findTeamEntitiesByIds(List<Long> teamIds) {
+        return teamRepository.findAllById(teamIds);
+    }
+
     public TeamMemberResponseDto getTeamMembers(Long teamId) {
         Team team = teamRepository.findByTeamIdOrElseThrow(teamId);
         return TeamMemberResponseDto.toDto(List.of(team));

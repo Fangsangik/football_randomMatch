@@ -2,6 +2,7 @@ package com.side.football_project.domain.match.domain;
 
 import com.side.football_project.domain.stadium.entity.Stadium;
 import com.side.football_project.domain.reservation.domain.Reservation;
+import com.side.football_project.domain.team.entity.Team;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "`match`")
 public class Match {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,6 +36,9 @@ public class Match {
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
+    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
+    private List<Team> teams = new ArrayList<>();
+
     private boolean isCompleted;
 
     @Builder
@@ -48,5 +53,10 @@ public class Match {
 
     public void markedAsCompleted() {
         this.isCompleted = true;
+    }
+
+    public void addMatchTeam(Team team) {
+        teams.add(team);
+        team.applyMatch(this);
     }
 }

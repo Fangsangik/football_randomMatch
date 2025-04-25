@@ -17,7 +17,7 @@ import java.util.UUID;
 public class S3Service {
     private final S3Client s3Client;
 
-    @Value("${cloud.aws.s3.bucketName}")
+    @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
     public String uploadFile(MultipartFile file) {
