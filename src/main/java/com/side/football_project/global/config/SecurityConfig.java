@@ -30,7 +30,7 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private static final String[] WHITE_LIST = {"/", "/signup", "/login", "/shorts/feed/**"};
+    private static final String[] WHITE_LIST = {"/", "/signup", "/login", "/shorts/feed/**", "/api/chat/**"};
 
     private final UserDetailsService userDetailsService;
     private final DelegatedAccessDeniedHandler delegatedAccessDeniedHandler;

@@ -26,7 +26,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
     private final UserDetailsService userDetailsService;
-    private final List<String> WHITE_LIST = List.of( "/auth/**", "/api/home/**",
+    private final List<String> WHITE_LIST = List.of( "/auth/**", "/api/home/**", "/api/chat",
             "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/api/chat/**", "/kakao/callback");
 
     @Override
