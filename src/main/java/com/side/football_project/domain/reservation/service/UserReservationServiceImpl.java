@@ -3,17 +3,14 @@ package com.side.football_project.domain.reservation.service;
 import com.side.football_project.domain.reservation.dto.*;
 import com.side.football_project.domain.stadium.entity.Stadium;
 import com.side.football_project.domain.stadium.service.StadiumService;
-import com.side.football_project.domain.team.dto.TeamResponseDto;
-import com.side.football_project.domain.team.dto.TeamsResponseDto;
 import com.side.football_project.domain.team.entity.Team;
 import com.side.football_project.domain.team.service.TeamService;
-import com.side.football_project.domain.team.service.TeamServiceImpl;
 import com.side.football_project.domain.user.entity.User;
 import com.side.football_project.domain.user.service.UserService;
 import com.side.football_project.global.common.exception.CustomException;
 import com.side.football_project.global.common.exception.type.ReservationErrorCode;
 import com.side.football_project.global.common.exception.type.UserErrorCode;
-import com.side.football_project.domain.reservation.domain.Reservation;
+import com.side.football_project.domain.reservation.entity.Reservation;
 import com.side.football_project.domain.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,8 +56,14 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationResponseDto findReservation(Long id) {
+    public ReservationResponseDto findReservation(Long id, User user) {
         Reservation reservation = reservationRepository.findReservationByIdOrElseThrow(id);
+        
+        // 예약 소유자만 조회 가능하도록 권한 검증
+        if (!reservation.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ReservationErrorCode.RESERVATION_ACCESS_DENIED);
+        }
+        
         return ReservationResponseDto.toEntity(reservation);
     }
 

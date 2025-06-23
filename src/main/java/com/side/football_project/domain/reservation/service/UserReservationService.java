@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 public interface ReservationService {
     ReservationResponseDto createReservation(ReservationRequestDto requestDto, User user);
 
-    ReservationResponseDto findReservation(Long id);
+    ReservationResponseDto findReservation(Long id, User user);
 
     Page<ReservationResponseDto> findAllReservationByStadium(Long id, int page, int size);
 
