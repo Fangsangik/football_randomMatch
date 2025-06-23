@@ -14,14 +14,16 @@ public class TeamResponseDto {
 
     private final int headCount;
 
+    private final int currentHeadCount;
 
     private final LocalDateTime createdAt;
 
     @Builder
-    public TeamResponseDto(Long id, String teamName, int headCount, LocalDateTime createdAt) {
+    public TeamResponseDto(Long id, String teamName, int headCount, int currentHeadCount, LocalDateTime createdAt) {
         this.id = id;
         this.teamName = teamName;
         this.headCount = headCount;
+        this.currentHeadCount = currentHeadCount;
         this.createdAt = createdAt;
     }
 
@@ -30,7 +32,20 @@ public class TeamResponseDto {
                 team.getId(),
                 team.getTeamName(),
                 team.getHeadCount(),
+                team.getCurrentHeadCount(),
+                team.getCreatedAt()
+        );
+    }
+
+    public static TeamResponseDto toDto(Team team, int currentHeadCount) {
+        return new TeamResponseDto(
+                team.getId(),
+                team.getTeamName(),
+                team.getHeadCount(),
+                currentHeadCount,
                 team.getCreatedAt()
         );
     }
 }
+
+

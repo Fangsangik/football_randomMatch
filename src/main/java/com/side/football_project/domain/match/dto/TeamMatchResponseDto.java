@@ -1,6 +1,6 @@
 package com.side.football_project.domain.match.dto;
 
-import com.side.football_project.domain.match.domain.Match;
+import com.side.football_project.domain.match.entity.Match;
 import com.side.football_project.domain.team.dto.TeamsResponseDto;
 import lombok.Builder;
 import lombok.Getter;

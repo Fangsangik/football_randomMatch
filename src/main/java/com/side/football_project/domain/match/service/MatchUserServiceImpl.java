@@ -1,7 +1,7 @@
 package com.side.football_project.domain.match.service;
 
-import com.side.football_project.domain.match.domain.Match;
-import com.side.football_project.domain.match.domain.MatchUser;
+import com.side.football_project.domain.match.entity.Match;
+import com.side.football_project.domain.match.entity.MatchUser;
 import com.side.football_project.domain.match.dto.*;
 import com.side.football_project.domain.match.repository.MatchRepository;
 import com.side.football_project.domain.match.repository.MatchUserRepository;
@@ -15,7 +15,7 @@ import com.side.football_project.global.common.exception.type.MatchErrorCode;
 import com.side.football_project.global.common.exception.type.UserErrorCode;
 
 import com.side.football_project.domain.reservation.dto.ReservationResponseDto;
-import com.side.football_project.domain.reservation.service.ReservationService;
+import com.side.football_project.domain.reservation.service.UserReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class MatchUserServiceImpl implements MatchUserService {
     private final MatchUserRepository matchUserRepository;
     private final MatchRepository matchRepository;
     private final UserService userService;
-    private final ReservationService reservationService;
+    private final UserReservationService reservationService;
     private final TeamService teamService;
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -39,13 +39,13 @@ public class MatchUserServiceImpl implements MatchUserService {
 
         validateUserRole(user);
 
-        ReservationResponseDto reservation = reservationService.findReservation(requestDto.getReservationId());
+        ReservationResponseDto reservation = reservationService.findReservation(requestDto.getReservationId(), user);
 
         List<User> users = userService.getAllUser();
 
         Match match = Match.builder()
                 .matchName(requestDto.getMatchName())
-                .reservation(ReservationResponseDto.toDto(reservation))
+                .reservation(ReservationResponseDto.toReservationEntity(reservation))
                 .matchDate(requestDto.getMatchDate())
                 .stadium(reservation.getStadium())
                 .isCompleted(false)
@@ -71,11 +71,11 @@ public class MatchUserServiceImpl implements MatchUserService {
 
         validateUserRole(user);
 
-        ReservationResponseDto reservation = reservationService.findReservation(requestDto.getReservationId());
+        ReservationResponseDto reservation = reservationService.findReservation(requestDto.getReservationId(), user);
 
         Match match = Match.builder()
                 .matchName(requestDto.getMatchName())
-                .reservation(ReservationResponseDto.toDto(reservation))
+                .reservation(ReservationResponseDto.toReservationEntity(reservation))
                 .stadium(reservation.getStadium())
                 .isCompleted(false)
                 .build();
@@ -152,6 +152,15 @@ public class MatchUserServiceImpl implements MatchUserService {
         for (MatchUser matchUser : matchById) {
             userService.updateUserTier(matchUser.getUser().getId(), user);
         }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<MatchResponseDto> getAllMatches() {
+        List<Match> matches = matchRepository.findAll();
+        return matches.stream()
+                .map(MatchResponseDto::toDto)
+                .toList();
     }
 
     private static void validateUserRole(User user) {

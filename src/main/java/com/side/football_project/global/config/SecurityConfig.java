@@ -2,6 +2,8 @@ package com.side.football_project.global.config;
 
 import com.side.football_project.global.security.auth.DelegatedAccessDeniedHandler;
 import com.side.football_project.global.security.auth.DelegatedAuthenticationEntryPoint;
+import com.side.football_project.global.security.filter.AuthFilter;
+import com.side.football_project.global.util.UrlUtil;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -30,11 +33,10 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private static final String[] WHITE_LIST = {"/", "/signup", "/login", "/shorts/feed/**", "/api/chat/**"};
 
-    private final UserDetailsService userDetailsService;
     private final DelegatedAccessDeniedHandler delegatedAccessDeniedHandler;
     private final DelegatedAuthenticationEntryPoint delegatedAuthenticationEntryPoint;
+    private final AuthFilter authFilter;
 
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
@@ -46,16 +48,7 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-    @Bean
-    AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-
-        authenticationProvider.setUserDetailsService(this.userDetailsService);
-
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-
-        return authenticationProvider;
-    }
+    // AuthenticationProvider 빈 제거 - AuthFilter에서 직접 처리
 
 
     @Bean
@@ -66,9 +59,13 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers(WHITE_LIST).permitAll()
+                        auth.requestMatchers(UrlUtil.WHITE_LIST_PATHS).permitAll()
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                                .requestMatchers("/static/**").permitAll()
+                                .requestMatchers("*.html", "*.css", "*.js", "*.png", "*.jpg", "*.ico").permitAll()
                                 .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR).permitAll()
+                                .requestMatchers(org.springframework.http.HttpMethod.GET, "/teams", "/matches", "/shorts").permitAll()
+                                .requestMatchers(org.springframework.http.HttpMethod.GET, "/teams/**", "/teams/list").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/vendor/**").hasRole("VENDOR")
                                 .anyRequest().authenticated()
@@ -82,6 +79,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint(delegatedAuthenticationEntryPoint)
                         .accessDeniedHandler(delegatedAccessDeniedHandler)
                 )
+
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")

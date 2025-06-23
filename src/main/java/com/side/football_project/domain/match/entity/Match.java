@@ -1,7 +1,8 @@
-package com.side.football_project.domain.match.domain;
+package com.side.football_project.domain.match.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.side.football_project.domain.stadium.entity.Stadium;
-import com.side.football_project.domain.reservation.domain.Reservation;
+import com.side.football_project.domain.reservation.entity.Reservation;
 import com.side.football_project.domain.team.entity.Team;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -25,6 +26,7 @@ public class Match {
     private String matchName;
     private LocalDateTime matchDate;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
     private List<MatchUser> matchUsers = new ArrayList<>();
 
@@ -36,6 +38,7 @@ public class Match {
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
     private List<Team> teams = new ArrayList<>();
 

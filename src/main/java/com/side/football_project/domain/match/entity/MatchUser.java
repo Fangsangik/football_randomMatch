@@ -1,13 +1,11 @@
-package com.side.football_project.domain.match.domain;
+package com.side.football_project.domain.match.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.side.football_project.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.LinkedList;
-import java.util.Queue;
 
 @Getter
 @Entity
@@ -17,10 +15,12 @@ public class MatchUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "match_id")
     private Match match;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

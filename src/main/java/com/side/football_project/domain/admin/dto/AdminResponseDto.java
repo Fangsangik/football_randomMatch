@@ -1,6 +1,6 @@
-package com.side.football_project.domain.user.dto;
+package com.side.football_project.domain.admin.dto;
 
-import com.side.football_project.domain.user.entity.Admin;
+import com.side.football_project.domain.admin.entity.Admin;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,15 +9,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdminResponseDto {
 
+    private Long id;
     private String email;
+    private String accessToken;
 
     @Builder
-    public AdminResponseDto(String email) {
+    public AdminResponseDto(Long id, String email, String accessToken) {
+        this.id = id;
         this.email = email;
+        this.accessToken = accessToken;
     }
 
     public static AdminResponseDto toEntity(Admin newAdmin) {
        AdminResponseDto admin = AdminResponseDto.builder()
+                .id(newAdmin.getId())
                 .email(newAdmin.getEmail())
                 .build();
         return admin;

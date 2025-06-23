@@ -1,6 +1,7 @@
 package com.side.football_project.domain.user.entity;
 
-import com.side.football_project.domain.match.domain.MatchUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.side.football_project.domain.match.entity.MatchUser;
 import com.side.football_project.domain.shorts.entity.Shorts;
 import com.side.football_project.domain.user.type.UserRole;
 import com.side.football_project.domain.user.type.UserTier;
@@ -41,9 +42,11 @@ public class User extends BaseEntity {
     @Column(length = 100)
     private String email;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MatchUser> matchUsers = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Shorts> shortsList = new ArrayList<>();
 
@@ -76,5 +79,9 @@ public class User extends BaseEntity {
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void updateRole(UserRole role) {
+        this.role = role;
     }
 }

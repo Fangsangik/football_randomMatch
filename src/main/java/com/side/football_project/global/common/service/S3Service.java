@@ -1,7 +1,9 @@
 package com.side.football_project.global.common.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -13,8 +15,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
+@ConditionalOnProperty(name = "cloud.aws.enabled", havingValue = "true")
 @RequiredArgsConstructor
-public class S3Service {
+public class S3Service implements FileUploadService {
     private final S3Client s3Client;
 
     @Value("${cloud.aws.s3.bucket}")

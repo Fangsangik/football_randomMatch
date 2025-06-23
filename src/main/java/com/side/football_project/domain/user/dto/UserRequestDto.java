@@ -10,6 +10,8 @@ public class UserRequestDto {
 
     private final String password;
 
+    private final String confirmPassword;
+
     private final String name;
 
     private final String phoneNumber;
@@ -20,9 +22,10 @@ public class UserRequestDto {
 
 
     @Builder
-    public UserRequestDto(String email, String password, String name, String phoneNumber, int age, UserRole role) {
+    public UserRequestDto(String email, String password, String confirmPassword, String name, String phoneNumber, int age, UserRole role) {
         this.email = email;
         this.password = password;
+        this.confirmPassword = confirmPassword;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.age = age;

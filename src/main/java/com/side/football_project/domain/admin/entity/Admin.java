@@ -1,4 +1,4 @@
-package com.side.football_project.domain.admin.domain;
+package com.side.football_project.domain.admin.entity;
 
 import com.side.football_project.domain.user.type.UserRole;
 import jakarta.persistence.Entity;

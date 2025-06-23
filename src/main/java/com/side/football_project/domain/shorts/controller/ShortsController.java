@@ -4,22 +4,23 @@ import com.side.football_project.domain.shorts.dto.ShortsRequestDto;
 import com.side.football_project.domain.shorts.dto.ShortsResponseDto;
 import com.side.football_project.domain.shorts.service.ShortsService;
 import com.side.football_project.domain.user.entity.User;
-import com.side.football_project.global.common.service.S3Service;
+import com.side.football_project.global.common.service.FileUploadService;
 import com.side.football_project.global.util.UserDetailsUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/shorts")
 public class ShortsController {
     private final ShortsService shortsService;
-    private final S3Service s3Service;
+    private final FileUploadService fileUploadService;
 
     /**
      * 숏츠 생성
@@ -30,12 +31,13 @@ public class ShortsController {
      * @return 생성된 숏츠의 정보 {@link ShortsResponseDto}
      */
     @PostMapping
+    @ResponseBody
     public ResponseEntity<ShortsResponseDto> createShorts(@RequestPart("file") MultipartFile file,
                                                           @RequestParam("title") String title,
                                                           @RequestParam("description") String description,
                                                           @AuthenticationPrincipal UserDetails userDetails) {
         User user = UserDetailsUtil.getUser(userDetails);
-        String url = s3Service.uploadFile(file);
+        String url = fileUploadService.uploadFile(file);
         ShortsRequestDto requestDto = new ShortsRequestDto(title, description, url);
         return ResponseEntity.ok(shortsService.createShorts(requestDto, user));
     }
@@ -46,7 +48,8 @@ public class ShortsController {
      * @param shortsId 숏츠 ID
      * @return 숏츠 정보
      */
-    @GetMapping("/{shortsId}")
+    @GetMapping("/{shortsId:[0-9]+}")
+    @ResponseBody
     public ResponseEntity<ShortsResponseDto> findShorts(@PathVariable Long shortsId) {
         return ResponseEntity.ok(shortsService.findShorts(shortsId));
     }
@@ -57,6 +60,7 @@ public class ShortsController {
      * @return 숏츠 리스트
      */
     @GetMapping("/feed")
+    @ResponseBody
     public ResponseEntity<Page<ShortsResponseDto>> findShortsFeed(@RequestParam(defaultValue = "0") int page,
                                                                   @RequestParam(defaultValue = "10") int size) {
         Page<ShortsResponseDto> shorts = shortsService.findShortsFeed(page, size);
@@ -70,7 +74,8 @@ public class ShortsController {
      * @param requestDto 숏츠 수정에 필요한 정보 {@link ShortsRequestDto}
      * @return 수정된 숏츠의 정보
      */
-    @PatchMapping("/{shortsId}")
+    @PatchMapping("/{shortsId:[0-9]+}")
+    @ResponseBody
     public ResponseEntity<ShortsResponseDto> updateShorts(@PathVariable Long shortsId,
                                                           @RequestBody ShortsRequestDto requestDto,
                                                           @AuthenticationPrincipal UserDetails userDetails) {
@@ -83,7 +88,8 @@ public class ShortsController {
      *
      * @param shortsId 숏츠 ID
      */
-    @DeleteMapping("/{shortsId}")
+    @DeleteMapping("/{shortsId:[0-9]+}")
+    @ResponseBody
     public ResponseEntity<Void> deleteShorts(@PathVariable Long shortsId,
                                              @AuthenticationPrincipal UserDetails userDetails) {
         User user = UserDetailsUtil.getUser(userDetails);

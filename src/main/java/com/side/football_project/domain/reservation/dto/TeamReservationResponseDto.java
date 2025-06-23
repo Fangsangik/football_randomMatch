@@ -1,6 +1,6 @@
 package com.side.football_project.domain.reservation.dto;
 
-import com.side.football_project.domain.reservation.domain.Reservation;
+import com.side.football_project.domain.reservation.entity.Reservation;
 import lombok.Getter;
 
 @Getter
