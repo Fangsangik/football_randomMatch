@@ -12,18 +12,12 @@ import com.side.football_project.domain.user.type.UserRole;
 import com.side.football_project.domain.user.type.UserTier;
 import com.side.football_project.global.common.exception.CustomException;
 import com.side.football_project.global.common.exception.type.UserErrorCode;
-import com.side.football_project.global.security.auth.CustomUserDetails;
-import com.side.football_project.global.security.auth.CustomUserDetailsService;
-import com.side.football_project.global.security.jwt.BlackListToken;
 import com.side.football_project.global.security.jwt.JwtProvider;
 import com.side.football_project.global.security.jwt.RefreshToken;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +30,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
-    private final BlackListToken blackListToken;
     private final RefreshToken refreshToken;
     private final AuthenticationManager authenticationManager;
 
@@ -95,13 +88,18 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    @Transactional
     @Override
     public void logout(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header != null && header.startsWith("Bearer ")) {
             String accessToken = header.substring(7);
-            blackListToken.addToBlackList(accessToken, jwtProvider.getExpirationTime());
+            long expiresIn = jwtProvider.getTokenExpirationTime(accessToken);
+
+            if (expiresIn <= 0) {
+                expiresIn = 5 * 60 * 1000; // 기본 만료 시간 5분 설정
+            }
+
+            jwtProvider.addToBlackList(accessToken, expiresIn);
         } else {
             throw new CustomException(UserErrorCode.INVALID_TOKEN);
         }

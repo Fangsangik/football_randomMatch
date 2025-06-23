@@ -31,6 +31,9 @@ public class UrlUtil {
             "/api/stadiums/*",
             
             // 회원가입/로그인 관련
+            "/users/login",
+            "/users/register", 
+            "/users/logout",
             "/vendor/signup", 
             "/admin/login", 
             "/admin/register", 
