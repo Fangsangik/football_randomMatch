@@ -1,7 +1,7 @@
 package com.side.football_project.global.security.jwt;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -10,7 +10,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RefreshToken {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
     private static final String REFRESH_TOKEN = "REFRESH";
 
     /**

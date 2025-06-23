@@ -139,6 +139,15 @@
             transform: translateY(-5px);
         }
         
+        .stat-card.clickable {
+            cursor: pointer;
+        }
+        
+        .stat-card.clickable:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
         .stat-card .icon {
             width: 60px;
             height: 60px;
@@ -277,16 +286,16 @@
             <p>Football Project</p>
         </div>
         <nav class="sidebar-nav">
-            <a href="#dashboard" class="nav-item active" onclick="showSection('dashboard')">
+            <a href="#dashboard" class="nav-item active" onclick="showSection('dashboard', event)">
                 <i class="fas fa-tachometer-alt"></i>대시보드
             </a>
-            <a href="#vendors" class="nav-item" onclick="showSection('vendors')">
+            <a href="#vendors" class="nav-item" onclick="showSection('vendors', event)">
                 <i class="fas fa-building"></i>업체 관리
             </a>
-            <a href="#users" class="nav-item" onclick="showSection('users')">
+            <a href="#users" class="nav-item" onclick="showSection('users', event)">
                 <i class="fas fa-users"></i>회원 관리
             </a>
-            <a href="#settings" class="nav-item" onclick="showSection('settings')">
+            <a href="#settings" class="nav-item" onclick="showSection('settings', event)">
                 <i class="fas fa-cogs"></i>설정
             </a>
         </nav>
@@ -309,28 +318,28 @@
             <!-- 대시보드 섹션 -->
             <div id="dashboard-section" class="section-content">
                 <div class="stats-grid">
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="filterVendorsByStatus('PENDING')">
                         <div class="icon pending">
                             <i class="fas fa-clock"></i>
                         </div>
                         <div class="number" id="pendingCount">0</div>
                         <div class="label">승인 대기</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="filterVendorsByStatus('APPROVED')">
                         <div class="icon approved">
                             <i class="fas fa-check"></i>
                         </div>
                         <div class="number" id="approvedCount">0</div>
                         <div class="label">승인 완료</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="filterVendorsByStatus('REJECTED')">
                         <div class="icon rejected">
                             <i class="fas fa-times"></i>
                         </div>
                         <div class="number" id="rejectedCount">0</div>
                         <div class="label">승인 거절</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="filterVendorsByStatus('ALL')">
                         <div class="icon total">
                             <i class="fas fa-building"></i>
                         </div>
@@ -342,7 +351,7 @@
                 <div class="section">
                     <div class="section-header">
                         <h3 class="section-title">최근 업체 신청</h3>
-                        <button class="action-btn view-btn" onclick="showSection('vendors')">
+                        <button class="action-btn view-btn" onclick="showSection('vendors', event)">
                             전체 보기
                         </button>
                     </div>
@@ -453,7 +462,7 @@
         }
 
         // 섹션 전환
-        function showSection(sectionName) {
+        function showSection(sectionName, event) {
             // 모든 섹션 숨기기
             document.querySelectorAll('[id$="-section"]').forEach(section => {
                 section.style.display = 'none';
@@ -462,11 +471,13 @@
             // 선택한 섹션 보이기
             document.getElementById(sectionName + '-section').style.display = 'block';
             
-            // 네비게이션 활성화 상태 변경
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.classList.add('active');
+            // 네비게이션 활성화 상태 변경 (이벤트가 있는 경우에만)
+            if (event && event.target) {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            }
             
             // 페이지 제목 변경
             const titles = {
@@ -494,8 +505,8 @@
             })
             .then(response => response.json())
             .then(vendors => {
-                updateStats(vendors);
-                displayRecentVendors(vendors.slice(0, 5));
+                updateStats(vendors.content, vendors.totalElements);
+                displayRecentVendors(vendors.content.slice(0, 5));
             })
             .catch(error => {
                 console.error('Error loading dashboard data:', error);
@@ -504,7 +515,7 @@
         }
 
         // 통계 업데이트
-        function updateStats(vendors) {
+        function updateStats(vendors, totalElements) {
             const pending = vendors.filter(v => v.status === 'PENDING').length;
             const approved = vendors.filter(v => v.status === 'APPROVED').length;
             const rejected = vendors.filter(v => v.status === 'REJECTED').length;
@@ -512,7 +523,7 @@
             document.getElementById('pendingCount').textContent = pending;
             document.getElementById('approvedCount').textContent = approved;
             document.getElementById('rejectedCount').textContent = rejected;
-            document.getElementById('totalCount').textContent = vendors.length;
+            document.getElementById('totalCount').textContent = totalElements;
         }
 
         // 최근 업체 표시
@@ -576,7 +587,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    ${vendors.map(vendor => `
+                    ${vendors.content.map(vendor => `
                         <tr>
                             <td>${vendor.companyName}</td>
                             <td>${vendor.userName}</td>
@@ -655,6 +666,70 @@
         // 업체 상세 보기
         function viewVendor(vendorId) {
             alert('업체 상세 보기 기능 준비중입니다.');
+        }
+
+        // 상태별 업체 필터링
+        function filterVendorsByStatus(status) {
+            // 업체 관리 섹션으로 이동
+            showSection('vendors');
+            
+            // 필터링된 업체 목록 로드
+            loadFilteredVendors(status);
+        }
+
+        // 필터링된 업체 목록 로드
+        function loadFilteredVendors(filterStatus) {
+            const token = localStorage.getItem('adminToken');
+            const container = document.getElementById('vendorsList');
+            
+            // 로딩 표시
+            container.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>업체 목록을 불러오는 중...</p>
+                </div>
+            `;
+            
+            fetch('/admin/vendor/applications', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => response.json())
+            .then(vendors => {
+                let filteredVendors = vendors.content;
+                let sectionTitle = '전체 업체';
+                
+                // 상태별 필터링
+                if (filterStatus !== 'ALL') {
+                    filteredVendors = vendors.content.filter(vendor => vendor.status === filterStatus);
+                    
+                    const statusTitles = {
+                        'PENDING': '승인 대기 업체',
+                        'APPROVED': '승인 완료 업체', 
+                        'REJECTED': '승인 거절 업체'
+                    };
+                    sectionTitle = statusTitles[filterStatus];
+                }
+                
+                // 섹션 제목 업데이트
+                updateSectionTitle('vendors', sectionTitle, filteredVendors.length);
+                
+                // 테이블 생성 및 표시
+                const table = createVendorTable({content: filteredVendors});
+                container.innerHTML = '';
+                container.appendChild(table);
+            })
+            .catch(error => {
+                console.error('Error loading filtered vendors:', error);
+                displayError('vendorsList', '업체 목록을 불러오는데 실패했습니다.');
+            });
+        }
+
+        // 섹션 제목 업데이트
+        function updateSectionTitle(sectionName, title, count) {
+            const pageTitle = document.getElementById('pageTitle');
+            pageTitle.textContent = `${title} (${count}개)`;
         }
 
         // 로그아웃
