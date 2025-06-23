@@ -1,4 +1,4 @@
-package com.side.football_project.domain.reservation.dto;
+package com.side.football_project.domain.vendor.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
