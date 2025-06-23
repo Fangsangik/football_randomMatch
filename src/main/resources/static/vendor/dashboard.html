@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>업체 대시보드 - Football Project</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo p {
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-right: 15px;
+        }
+        
+        .card-icon.stadium {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .card-icon.reservation {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .card-icon.stats {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .card-icon.profile {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .card-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .card-content {
+            margin-top: 15px;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stats-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .quick-actions {
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: none;
+            font-size: 0.9rem;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+        
+        .action-btn.secondary {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .recent-activity {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .activity-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            color: #666;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .alert-info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .alert-warning {
+            background: #fff3e0;
+            color: #ef6c00;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            padding: 5px;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .modal-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background: #0056b3;
+        }
+
+        .modal-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #545b62;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1><i class="fas fa-building"></i> 업체 대시보드</h1>
+                <p>Football Project Vendor Dashboard</p>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span id="vendorName">업체명</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="alert alert-info" id="infoAlert">
+            <i class="fas fa-info-circle"></i> 대시보드 정보를 불러오는 중입니다...
+        </div>
+        
+        <div class="alert alert-warning" id="warningAlert" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i> 업체 승인이 완료되지 않았습니다. 관리자 승인 후 모든 기능을 이용할 수 있습니다.
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- 경기장 관리 카드 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon stadium">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">경기장 관리</div>
+                        <div class="card-subtitle">등록된 경기장 현황</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="stats-row">
+                        <span class="stat-label">총 경기장 수</span>
+                        <span class="stat-value" id="totalStadiums">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">이용 가능</span>
+                        <span class="stat-value" id="availableStadiums">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">점검 중</span>
+                        <span class="stat-value" id="maintenanceStadiums">-</span>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="goToStadiumManagement()">
+                        <i class="fas fa-plus"></i> 경기장 등록
+                    </button>
+                    <button class="action-btn secondary" onclick="viewStadiumList()">
+                        <i class="fas fa-list"></i> 경기장 목록
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 예약 관리 카드 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon reservation">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">예약 관리</div>
+                        <div class="card-subtitle">예약 현황 및 관리</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="stats-row">
+                        <span class="stat-label">오늘 예약</span>
+                        <span class="stat-value" id="todayReservations">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">이번 주 예약</span>
+                        <span class="stat-value" id="weekReservations">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">대기 중인 예약</span>
+                        <span class="stat-value" id="pendingReservations">-</span>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="goToReservationManagement()">
+                        <i class="fas fa-calendar-alt"></i> 예약 관리
+                    </button>
+                    <button class="action-btn secondary" onclick="viewReservationHistory()">
+                        <i class="fas fa-history"></i> 예약 내역
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 통계 카드 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon stats">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">통계</div>
+                        <div class="card-subtitle">수익 및 이용 현황</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="stats-row">
+                        <span class="stat-label">이번 달 수익</span>
+                        <span class="stat-value" id="monthlyRevenue">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">총 이용 횟수</span>
+                        <span class="stat-value" id="totalUsage">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">평균 평점</span>
+                        <span class="stat-value" id="averageRating">-</span>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="viewDetailedStats()">
+                        <i class="fas fa-chart-line"></i> 상세 통계
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 업체 정보 카드 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon profile">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">업체 정보</div>
+                        <div class="card-subtitle">내 업체 정보 관리</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="stats-row">
+                        <span class="stat-label">승인 상태</span>
+                        <span class="stat-value" id="approvalStatus">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">업체 주소</span>
+                        <span class="stat-value" id="vendorAddress">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">연락처</span>
+                        <span class="stat-value" id="vendorPhone">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">업체 설명</span>
+                        <span class="stat-value" id="vendorDescription">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">가입일</span>
+                        <span class="stat-value" id="joinDate">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stat-label">사업자 번호</span>
+                        <span class="stat-value" id="businessNumber">-</span>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="editVendorInfo()">
+                        <i class="fas fa-edit"></i> 정보 수정
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 최근 활동 -->
+        <div class="recent-activity">
+            <h2 class="section-title">
+                <i class="fas fa-clock"></i> 최근 활동
+            </h2>
+            <div id="recentActivityList">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <div>최근 활동을 불러오는 중입니다...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드 시 인증 확인 및 데이터 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            const vendorToken = localStorage.getItem('vendorToken');
+            if (!vendorToken) {
+                alert('로그인이 필요합니다.');
+                window.location.href = '/vendor/login.html';
+                return;
+            }
+            
+            loadDashboardData();
+        });
+        
+        // 대시보드 데이터 로드
+        async function loadDashboardData() {
+            try {
+                const vendorToken = localStorage.getItem('vendorToken');
+                
+                // 업체 정보 로드
+                const vendorResponse = await fetch('/vendor/my-info', {
+                    headers: {
+                        'Authorization': `Bearer ${vendorToken}`
+                    }
+                });
+                
+                if (!vendorResponse.ok) {
+                    throw new Error('업체 정보를 불러올 수 없습니다.');
+                }
+                
+                const vendorData = await vendorResponse.json();
+                updateVendorInfo(vendorData);
+                
+                // 경기장 데이터 로드
+                const stadiumResponse = await fetch('/vendor/my-stadiums', {
+                    headers: {
+                        'Authorization': `Bearer ${vendorToken}`
+                    }
+                });
+                
+                if (stadiumResponse.ok) {
+                    const stadiumData = await stadiumResponse.json();
+                    updateStadiumStats(stadiumData);
+                }
+                
+                // 예약 통계 로드
+                const reservationStatsResponse = await fetch('/vendor/reservations/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${vendorToken}`
+                    }
+                });
+                
+                if (reservationStatsResponse.ok) {
+                    const reservationStats = await reservationStatsResponse.json();
+                    updateReservationStats(reservationStats);
+                }
+                
+                // 알림 숨기기
+                document.getElementById('infoAlert').style.display = 'none';
+                
+            } catch (error) {
+                console.error('대시보드 데이터 로드 실패:', error);
+                showAlert('대시보드 정보를 불러오는데 실패했습니다.', 'error');
+            }
+        }
+        
+        // 업체 정보 업데이트
+        function updateVendorInfo(data) {
+            document.getElementById('vendorName').textContent = data.companyName || '업체명';
+            document.getElementById('approvalStatus').textContent = getStatusText(data.status);
+            document.getElementById('vendorAddress').textContent = data.businessAddress || '-';
+            document.getElementById('vendorPhone').textContent = data.phoneNumber || '-';
+            document.getElementById('vendorDescription').textContent = data.description || '-';
+            document.getElementById('joinDate').textContent = formatDate(data.appliedAt);
+            document.getElementById('businessNumber').textContent = data.businessNumber || '-';
+            
+            // 승인 상태에 따른 경고 메시지
+            if (data.status !== 'APPROVED') {
+                document.getElementById('warningAlert').style.display = 'block';
+            }
+        }
+        
+        // 경기장 통계 업데이트
+        function updateStadiumStats(stadiums) {
+            const totalStadiums = stadiums.length;
+            const availableStadiums = stadiums.filter(s => s.status === 'AVAILABLE').length;
+            const maintenanceStadiums = stadiums.filter(s => s.status === 'MAINTENANCE').length;
+            
+            document.getElementById('totalStadiums').textContent = totalStadiums;
+            document.getElementById('availableStadiums').textContent = availableStadiums;
+            document.getElementById('maintenanceStadiums').textContent = maintenanceStadiums;
+        }
+        
+        // 예약 통계 업데이트
+        function updateReservationStats(stats) {
+            document.getElementById('todayReservations').textContent = stats.todayReservations || 0;
+            document.getElementById('weekReservations').textContent = stats.weekReservations || 0;
+            document.getElementById('pendingReservations').textContent = stats.pendingReservations || 0;
+            
+            // 월간 수익과 총 이용 횟수는 임시로 설정 (추후 API 추가 시 변경)
+            document.getElementById('monthlyRevenue').textContent = '0원';
+            document.getElementById('totalUsage').textContent = stats.completedReservations || 0;
+            document.getElementById('averageRating').textContent = '0.0';
+        }
+        
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            const statusMap = {
+                'PENDING': '승인 대기',
+                'APPROVED': '승인 완료',
+                'REJECTED': '승인 거절'
+            };
+            return statusMap[status] || status;
+        }
+        
+        // 날짜 포맷팅
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR');
+        }
+        
+        // 알림 표시
+        function showAlert(message, type = 'info') {
+            const alertElement = document.getElementById('infoAlert');
+            alertElement.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+            alertElement.className = `alert alert-${type}`;
+            alertElement.style.display = 'block';
+            
+            setTimeout(() => {
+                alertElement.style.display = 'none';
+            }, 5000);
+        }
+        
+        // 네비게이션 함수들
+        function goToStadiumManagement() {
+            window.location.href = '/vendor/stadium-management.html';
+        }
+        
+        function viewStadiumList() {
+            window.location.href = '/vendor/stadium-list.html';
+        }
+        
+        function goToReservationManagement() {
+            window.location.href = '/vendor/reservation-management.html';
+        }
+        
+        function viewReservationHistory() {
+            window.location.href = '/vendor/reservation-history.html';
+        }
+        
+        function viewDetailedStats() {
+            window.location.href = '/vendor/statistics.html';
+        }
+        
+        function editVendorInfo() {
+            openEditModal();
+        }
+
+        // 업체 정보 수정 모달 열기
+        function openEditModal() {
+            // 현재 업체 정보로 폼 채우기
+            document.getElementById('editName').value = document.getElementById('vendorName').textContent;
+            document.getElementById('editAddress').value = document.getElementById('vendorAddress').textContent;
+            document.getElementById('editPhone').value = document.getElementById('vendorPhone').textContent;
+            document.getElementById('editDescription').value = document.getElementById('vendorDescription').textContent;
+            
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        // 모달 닫기
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // 업체 정보 수정 제출
+        async function submitVendorUpdate() {
+            const vendorToken = localStorage.getItem('vendorToken');
+            if (!vendorToken) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+
+            const updateData = {
+                name: document.getElementById('editName').value,
+                address: document.getElementById('editAddress').value,
+                phoneNumber: document.getElementById('editPhone').value,
+                description: document.getElementById('editDescription').value
+            };
+
+            try {
+                const response = await fetch('/vendor/fix-vendor-info', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${vendorToken}`
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('업체 정보 수정에 실패했습니다.');
+                }
+
+                const result = await response.json();
+                
+                // UI 업데이트
+                document.getElementById('vendorName').textContent = result.companyName;
+                document.getElementById('vendorAddress').textContent = result.address;
+                document.getElementById('vendorPhone').textContent = result.phoneNumber;
+                document.getElementById('vendorDescription').textContent = result.description;
+
+                alert('업체 정보가 성공적으로 수정되었습니다.');
+                closeEditModal();
+                
+            } catch (error) {
+                console.error('업체 정보 수정 오류:', error);
+                alert('업체 정보 수정 중 오류가 발생했습니다: ' + error.message);
+            }
+        }
+        
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeEditModal();
+            }
+        }
+
+        // 로그아웃
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('vendorToken');
+                window.location.href = '/vendor/login.html';
+            }
+        }
+    </script>
+
+    <!-- 업체 정보 수정 모달 -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">업체 정보 수정</h3>
+                <button class="close-btn" onclick="closeEditModal()">×</button>
+            </div>
+            
+            <form>
+                <div class="form-group">
+                    <label for="editName">업체명</label>
+                    <input type="text" id="editName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editAddress">업체 주소</label>
+                    <input type="text" id="editAddress" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editPhone">연락처</label>
+                    <input type="tel" id="editPhone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDescription">업체 설명</label>
+                    <textarea id="editDescription" placeholder="업체에 대한 간단한 설명을 입력해주세요"></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn secondary" onclick="closeEditModal()">취소</button>
+                    <button type="button" class="modal-btn primary" onclick="submitVendorUpdate()">수정 완료</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

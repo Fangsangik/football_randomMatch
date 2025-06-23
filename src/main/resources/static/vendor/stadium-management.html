@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경기장 관리 - Football Project</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .breadcrumb a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-header {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-header:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .sidebar-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #f39c12;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .stats-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stats-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stats-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .stats-value {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .tips-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .tips-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            color: #666;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .tips-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .tips-list i {
+            color: #f39c12;
+            margin-top: 2px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .loading i {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            display: block;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div>
+                <div class="breadcrumb">
+                    <a href="/vendor/dashboard.html"><i class="fas fa-home"></i> 대시보드</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>경기장 관리</span>
+                </div>
+                <h1 style="margin-top: 10px; font-size: 1.5rem;">경기장 관리</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn-header" onclick="viewStadiumList()">
+                    <i class="fas fa-list"></i> 경기장 목록
+                </button>
+                <button class="btn-header" onclick="goToDashboard()">
+                    <i class="fas fa-arrow-left"></i> 대시보드
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="alert alert-success" id="successAlert"></div>
+        <div class="alert alert-error" id="errorAlert"></div>
+        
+        <div class="content-grid">
+            <div class="main-content">
+                <h2 class="section-title">
+                    <i class="fas fa-plus-circle"></i> 새 경기장 등록
+                </h2>
+                
+                <form id="stadiumForm">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-info-circle"></i> 기본 정보
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="name">경기장명 <span class="required">*</span></label>
+                                <input type="text" id="name" name="name" required placeholder="경기장 이름을 입력하세요">
+                            </div>
+                            <div class="form-group">
+                                <label for="capacity">수용 인원 <span class="required">*</span></label>
+                                <input type="number" id="capacity" name="capacity" required min="10" max="1000" placeholder="예: 22">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">경기장 설명</label>
+                            <textarea id="description" name="description" placeholder="경기장에 대한 상세 설명을 입력하세요 (시설, 특징 등)"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-map-marker-alt"></i> 위치 정보
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="city">도시 <span class="required">*</span></label>
+                                <input type="text" id="city" name="city" required placeholder="예: 서울">
+                            </div>
+                            <div class="form-group">
+                                <label for="state">시/도 <span class="required">*</span></label>
+                                <input type="text" id="state" name="state" required placeholder="예: 서울특별시">
+                            </div>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="postalCode">우편번호 <span class="required">*</span></label>
+                                <input type="text" id="postalCode" name="postalCode" required placeholder="예: 12345">
+                            </div>
+                            <div class="form-group">
+                                <label for="specificAddress">상세 주소 <span class="required">*</span></label>
+                                <input type="text" id="specificAddress" name="specificAddress" required placeholder="구체적인 주소를 입력하세요">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 경기장 등록
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            <i class="fas fa-undo"></i> 초기화
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="sidebar">
+                <!-- 통계 카드 -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-chart-bar"></i> 나의 경기장 현황
+                    </h3>
+                    <div class="stats-item">
+                        <span class="stats-label">총 경기장 수</span>
+                        <span class="stats-value" id="totalStadiums">-</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">이용 가능</span>
+                        <span class="stats-value" id="availableStadiums">-</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">점검 중</span>
+                        <span class="stats-value" id="maintenanceStadiums">-</span>
+                    </div>
+                </div>
+                
+                <!-- 도움말 카드 -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-lightbulb"></i> 등록 가이드
+                    </h3>
+                    <ul class="tips-list">
+                        <li>
+                            <i class="fas fa-check"></i>
+                            경기장명은 명확하고 구체적으로 작성하세요
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            수용 인원은 실제 경기 가능한 인원수를 입력하세요
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            위치 정보는 정확히 입력해야 합니다
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            경기장 설명에는 시설 특징을 상세히 기록하세요
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            등록 후 승인까지 1-2일 소요됩니다
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- 빠른 액션 카드 -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-rocket"></i> 빠른 작업
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button class="btn btn-primary" onclick="viewStadiumList()">
+                            <i class="fas fa-list"></i> 내 경기장 보기
+                        </button>
+                        <button class="btn btn-secondary" onclick="goToReservations()">
+                            <i class="fas fa-calendar"></i> 예약 관리
+                        </button>
+                        <button class="btn btn-secondary" onclick="goToDashboard()">
+                            <i class="fas fa-home"></i> 대시보드
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드 시 인증 확인 및 데이터 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            const vendorToken = localStorage.getItem('vendorToken');
+            if (!vendorToken) {
+                alert('로그인이 필요합니다.');
+                window.location.href = '/vendor/login.html';
+                return;
+            }
+            
+            // URL에서 수정할 경기장 ID 확인
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('editId');
+            
+            if (editId) {
+                initEditMode(editId);
+            } else {
+                initCreateMode();
+            }
+            
+            loadStadiumStats();
+        });
+
+        let isEditMode = false;
+        let editStadiumId = null;
+
+        // 생성 모드 초기화
+        function initCreateMode() {
+            isEditMode = false;
+            editStadiumId = null;
+            document.querySelector('.section-title').innerHTML = '<i class="fas fa-plus-circle"></i> 새 경기장 등록';
+            document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-plus"></i> 경기장 등록';
+        }
+
+        // 수정 모드 초기화
+        async function initEditMode(stadiumId) {
+            isEditMode = true;
+            editStadiumId = stadiumId;
+            
+            // 페이지 제목 변경
+            document.querySelector('.section-title').innerHTML = '<i class="fas fa-edit"></i> 경기장 정보 수정';
+            document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> 수정 완료';
+            
+            // 기존 경기장 데이터 로드
+            await loadStadiumForEdit(stadiumId);
+        }
+
+        // 수정할 경기장 데이터 로드
+        async function loadStadiumForEdit(stadiumId) {
+            try {
+                const vendorToken = localStorage.getItem('vendorToken');
+                const response = await fetch(`/stadiums/${stadiumId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${vendorToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('경기장 정보를 불러올 수 없습니다.');
+                }
+
+                const stadium = await response.json();
+                
+                // 폼에 데이터 채우기
+                document.getElementById('name').value = stadium.name || '';
+                document.getElementById('capacity').value = stadium.capacity || '';
+                document.getElementById('description').value = stadium.description || '';
+                
+                // 주소 정보가 있다면 채우기 (stadium.address는 객체일 수 있음)
+                if (stadium.address) {
+                    if (typeof stadium.address === 'string') {
+                        // 주소가 문자열인 경우 파싱 시도
+                        const addressParts = stadium.address.split(' ');
+                        if (addressParts.length >= 2) {
+                            document.getElementById('city').value = addressParts[0] || '';
+                            document.getElementById('state').value = addressParts[1] || '';
+                        }
+                    } else {
+                        // 주소가 객체인 경우
+                        document.getElementById('city').value = stadium.address.city || '';
+                        document.getElementById('state').value = stadium.address.state || '';
+                        document.getElementById('postalCode').value = stadium.address.postalCode || '';
+                        document.getElementById('specificAddress').value = stadium.address.specificAddress || '';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('경기장 데이터 로드 실패:', error);
+                showAlert('경기장 정보를 불러오는데 실패했습니다.', 'error');
+            }
+        }
+        
+        // 경기장 통계 로드
+        async function loadStadiumStats() {
+            try {
+                const vendorToken = localStorage.getItem('vendorToken');
+                const response = await fetch('/vendor/my-stadiums', {
+                    headers: {
+                        'Authorization': `Bearer ${vendorToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const stadiums = await response.json();
+                    updateStadiumStats(stadiums);
+                }
+            } catch (error) {
+                console.error('경기장 통계 로드 실패:', error);
+            }
+        }
+        
+        // 경기장 통계 업데이트
+        function updateStadiumStats(stadiums) {
+            const totalStadiums = stadiums.length;
+            const availableStadiums = stadiums.filter(s => s.status === 'AVAILABLE').length;
+            const maintenanceStadiums = stadiums.filter(s => s.status === 'MAINTENANCE').length;
+            
+            document.getElementById('totalStadiums').textContent = totalStadiums;
+            document.getElementById('availableStadiums').textContent = availableStadiums;
+            document.getElementById('maintenanceStadiums').textContent = maintenanceStadiums;
+        }
+        
+        // 경기장 등록/수정 폼 제출
+        document.getElementById('stadiumForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const stadiumData = {
+                name: formData.get('name'),
+                capacity: parseInt(formData.get('capacity')),
+                description: formData.get('description'),
+                city: formData.get('city'),
+                state: formData.get('state'),
+                postalCode: formData.get('postalCode'),
+                specificAddress: formData.get('specificAddress')
+            };
+            
+            try {
+                const vendorToken = localStorage.getItem('vendorToken');
+                
+                let response;
+                if (isEditMode && editStadiumId) {
+                    // 수정 모드
+                    response = await fetch(`/stadiums/${editStadiumId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${vendorToken}`
+                        },
+                        body: JSON.stringify(stadiumData)
+                    });
+                } else {
+                    // 생성 모드
+                    response = await fetch('/stadiums', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${vendorToken}`
+                        },
+                        body: JSON.stringify(stadiumData)
+                    });
+                }
+                
+                if (response.ok) {
+                    const successMessage = isEditMode ? 
+                        '경기장 정보가 성공적으로 수정되었습니다!' : 
+                        '경기장이 성공적으로 등록되었습니다!';
+                    
+                    showAlert(successMessage, 'success');
+                    
+                    if (isEditMode) {
+                        // 수정 후 경기장 목록으로 이동
+                        setTimeout(() => {
+                            window.location.href = '/vendor/stadium-list.html';
+                        }, 1500);
+                    } else {
+                        // 생성 후 폼 리셋
+                        document.getElementById('stadiumForm').reset();
+                        setTimeout(() => {
+                            loadStadiumStats(); // 통계 새로고침
+                        }, 1000);
+                    }
+                } else {
+                    const errorData = await response.json();
+                    const errorMessage = isEditMode ? '경기장 수정에 실패했습니다.' : '경기장 등록에 실패했습니다.';
+                    throw new Error(errorData.message || errorMessage);
+                }
+            } catch (error) {
+                showAlert(error.message || '경기장 등록 중 오류가 발생했습니다.', 'error');
+            }
+        });
+        
+        // 알림 표시
+        function showAlert(message, type = 'success') {
+            const alertElement = document.getElementById(type === 'success' ? 'successAlert' : 'errorAlert');
+            alertElement.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            alertElement.style.display = 'block';
+            
+            // 다른 알림 숨기기
+            document.getElementById('successAlert').style.display = type === 'success' ? 'block' : 'none';
+            document.getElementById('errorAlert').style.display = type === 'error' ? 'block' : 'none';
+            
+            setTimeout(() => {
+                alertElement.style.display = 'none';
+            }, 5000);
+        }
+        
+        // 폼 초기화
+        function resetForm() {
+            if (confirm('입력한 내용이 모두 삭제됩니다. 계속하시겠습니까?')) {
+                document.getElementById('stadiumForm').reset();
+            }
+        }
+        
+        // 네비게이션 함수들
+        function viewStadiumList() {
+            window.location.href = '/vendor/stadium-list.html';
+        }
+        
+        function goToReservations() {
+            window.location.href = '/vendor/reservation-management.html';
+        }
+        
+        function goToDashboard() {
+            window.location.href = '/vendor/dashboard.html';
+        }
+    </script>
+</body>
+</html>

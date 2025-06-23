@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경기장 검색 - Football Project</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #45a049;
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+        }
+
+        .btn-secondary:hover {
+            background: #1976D2;
+        }
+
+        .stadium-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stadium-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stadium-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stadium-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .stadium-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .stadium-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .detail-icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+        }
+
+        .stadium-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .location-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #FF5722;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .location-btn:hover {
+            background: #E53E3E;
+            transform: scale(1.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 18px;
+        }
+
+        .map-container {
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .form-group {
+                min-width: 100%;
+            }
+
+            .stadium-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ 경기장 검색</h1>
+            <div class="search-form">
+                <div class="form-group">
+                    <label for="region">지역</label>
+                    <input type="text" id="region" placeholder="예: 서울, 강남구">
+                </div>
+                <div class="form-group">
+                    <label for="keyword">키워드</label>
+                    <input type="text" id="keyword" placeholder="경기장 이름 또는 설명">
+                </div>
+                <button class="btn" onclick="searchStadiums()">🔍 검색</button>
+                <button class="btn btn-secondary" onclick="findNearbyStadiums()">📍 근처 경기장</button>
+            </div>
+        </div>
+
+        <div id="results">
+            <div class="loading">검색어를 입력하고 검색 버튼을 클릭하세요</div>
+        </div>
+    </div>
+
+    <button class="location-btn" onclick="getCurrentLocation()" title="내 위치로 검색">📍</button>
+
+    <script>
+        let currentLocation = null;
+
+        // 경기장 검색
+        async function searchStadiums() {
+            const region = document.getElementById('region').value;
+            const keyword = document.getElementById('keyword').value;
+
+            if (!region && !keyword) {
+                alert('지역 또는 키워드를 입력해주세요.');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const params = new URLSearchParams();
+                if (region) params.append('region', region);
+                if (keyword) params.append('keyword', keyword);
+
+                const response = await fetch(`/api/stadiums/search?${params.toString()}`);
+                const stadiums = await response.json();
+
+                displayStadiums(stadiums);
+            } catch (error) {
+                console.error('검색 오류:', error);
+                showError('검색 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 근처 경기장 찾기
+        async function findNearbyStadiums() {
+            if (!currentLocation) {
+                getCurrentLocation();
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const params = new URLSearchParams({
+                    latitude: currentLocation.latitude,
+                    longitude: currentLocation.longitude,
+                    radiusKm: 5
+                });
+
+                const response = await fetch(`/api/stadiums/nearby?${params.toString()}`);
+                const stadiums = await response.json();
+
+                displayStadiums(stadiums);
+            } catch (error) {
+                console.error('근처 검색 오류:', error);
+                showError('근처 경기장 검색 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 현재 위치 가져오기
+        function getCurrentLocation() {
+            if (!navigator.geolocation) {
+                alert('이 브라우저는 위치 서비스를 지원하지 않습니다.');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    currentLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                    alert('위치가 설정되었습니다. 다시 근처 경기장 버튼을 클릭해주세요.');
+                },
+                error => {
+                    console.error('위치 오류:', error);
+                    alert('위치 정보를 가져올 수 없습니다.');
+                }
+            );
+        }
+
+        // 경기장 목록 표시
+        function displayStadiums(stadiums) {
+            const resultsDiv = document.getElementById('results');
+
+            if (!stadiums || stadiums.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results">검색 결과가 없습니다.</div>';
+                return;
+            }
+
+            const stadiumsHtml = stadiums.map(stadium => `
+                <div class="stadium-card">
+                    <div class="stadium-name">${stadium.name}</div>
+                    <div class="stadium-description">${stadium.description || '설명이 없습니다.'}</div>
+                    <div class="stadium-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">👥</span>
+                            <span>수용인원: ${stadium.capacity}명</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📍</span>
+                            <span>${stadium.address || '주소 정보 없음'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">💰</span>
+                            <span>시간당 10,000원</span>
+                        </div>
+                    </div>
+                    <div class="stadium-actions">
+                        <button class="btn btn-small" onclick="viewStadiumDetail(${stadium.id})">상세보기</button>
+                        <button class="btn btn-small btn-secondary" onclick="viewAvailableTimes(${stadium.id})">예약하기</button>
+                    </div>
+                </div>
+            `).join('');
+
+            resultsDiv.innerHTML = `<div class="stadium-grid">${stadiumsHtml}</div>`;
+        }
+
+        // 경기장 상세 보기
+        function viewStadiumDetail(stadiumId) {
+            window.location.href = `/user/stadium-detail.html?id=${stadiumId}`;
+        }
+
+        // 예약 가능 시간 보기
+        function viewAvailableTimes(stadiumId) {
+            window.location.href = `/user/reservation.html?stadiumId=${stadiumId}`;
+        }
+
+        // 로딩 표시
+        function showLoading() {
+            document.getElementById('results').innerHTML = '<div class="loading">검색 중...</div>';
+        }
+
+        // 오류 표시
+        function showError(message) {
+            document.getElementById('results').innerHTML = `<div class="no-results">${message}</div>`;
+        }
+
+        // 엔터 키로 검색
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchStadiums();
+            }
+        });
+    </script>
+</body>
+</html>
