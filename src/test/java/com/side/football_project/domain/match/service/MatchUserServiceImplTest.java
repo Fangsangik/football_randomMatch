@@ -1,7 +1,7 @@
 package com.side.football_project.domain.match.service;
 
-import com.side.football_project.domain.match.domain.Match;
-import com.side.football_project.domain.match.domain.MatchUser;
+import com.side.football_project.domain.match.entity.Match;
+import com.side.football_project.domain.match.entity.MatchUser;
 import com.side.football_project.domain.match.repository.MatchRepository;
 import com.side.football_project.domain.match.repository.MatchUserRepository;
 import com.side.football_project.domain.stadium.entity.Stadium;

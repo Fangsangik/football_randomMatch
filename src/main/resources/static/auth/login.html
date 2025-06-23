@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - Football Project</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transform: rotate(45deg);
+            z-index: 1;
+        }
+        
+        .login-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .logo h1 {
+            color: #333;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.1rem;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+        
+        .remember-forgot label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .remember-forgot input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .remember-forgot a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .remember-forgot a:hover {
+            color: #764ba2;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e5e9;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .auth-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .auth-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            margin: 0 10px;
+        }
+        
+        .auth-links a:hover {
+            color: #764ba2;
+        }
+        
+        .quick-login {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .quick-login h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        .quick-login-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .quick-btn {
+            padding: 8px 16px;
+            border: 1px solid #667eea;
+            background: transparent;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .alert-error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+        
+        .alert-success {
+            background: #efe;
+            color: #363;
+            border: 1px solid #cfc;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            margin-top: 10px;
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 25px;
+                margin: 10px;
+            }
+            
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-group input {
+                padding: 12px 15px 12px 45px;
+            }
+            
+            .remember-forgot {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .quick-login-btns {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-content">
+            <div class="logo">
+                <i class="fas fa-futbol"></i>
+                <h1>로그인</h1>
+                <p>Football Project에 오신 것을 환영합니다</p>
+            </div>
+            
+            <div class="alert alert-error" id="errorAlert"></div>
+            <div class="alert alert-success" id="successAlert"></div>
+            
+            <div class="quick-login">
+                <h4>빠른 로그인</h4>
+                <div class="quick-login-btns">
+                    <button class="quick-btn" onclick="quickFill('user@test.com', 'password123')">
+                        <i class="fas fa-user"></i> 일반 사용자
+                    </button>
+                    <button class="quick-btn" onclick="window.location.href='/vendor/login.html'">
+                        <i class="fas fa-building"></i> 업체 로그인
+                    </button>
+                    <button class="quick-btn" onclick="window.location.href='/admin/login.html'">
+                        <i class="fas fa-user-shield"></i> 관리자 로그인
+                    </button>
+                </div>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="email" name="email" required placeholder="이메일을 입력하세요" autocomplete="email">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">비밀번호</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" required placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+                    </div>
+                </div>
+                
+                <div class="remember-forgot">
+                    <label>
+                        <input type="checkbox" id="rememberMe">
+                        로그인 상태 유지
+                    </label>
+                    <a href="#" onclick="alert('비밀번호 찾기 기능은 준비중입니다.')">비밀번호 찾기</a>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> 로그인
+                </button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner"></i> 로그인 처리 중...
+            </div>
+            
+            <div class="divider">
+                <span>또는</span>
+            </div>
+            
+            <div class="auth-links">
+                <a href="/auth/signup">
+                    <i class="fas fa-user-plus"></i> 회원가입
+                </a>
+                <span style="color: #ddd;">|</span>
+                <a href="/vendor/signup">
+                    <i class="fas fa-building"></i> 업체 가입
+                </a>
+                <span style="color: #ddd;">|</span>
+                <a href="/">
+                    <i class="fas fa-home"></i> 홈으로
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showAlert(message, type = 'error') {
+            const errorAlert = document.getElementById('errorAlert');
+            const successAlert = document.getElementById('successAlert');
+            
+            errorAlert.style.display = 'none';
+            successAlert.style.display = 'none';
+            
+            if (type === 'error') {
+                errorAlert.textContent = message;
+                errorAlert.style.display = 'block';
+            } else {
+                successAlert.textContent = message;
+                successAlert.style.display = 'block';
+            }
+        }
+        
+        // 빠른 로그인 정보 채우기
+        function quickFill(email, password) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+        }
+        
+        // 페이지 로드시 저장된 로그인 정보 복원
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedEmail = localStorage.getItem('savedEmail');
+            const rememberMe = localStorage.getItem('rememberMe') === 'true';
+            
+            if (savedEmail && rememberMe) {
+                document.getElementById('email').value = savedEmail;
+                document.getElementById('rememberMe').checked = true;
+            }
+        });
+        
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            // 유효성 검사
+            if (!email || !password) {
+                showAlert('이메일과 비밀번호를 모두 입력해주세요.');
+                return;
+            }
+            
+            // 이메일 형식 검사
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAlert('올바른 이메일 형식을 입력해주세요.');
+                return;
+            }
+            
+            const loadingElement = document.getElementById('loading');
+            const submitBtn = document.querySelector('.login-btn');
+            
+            // 로딩 상태 시작
+            loadingElement.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로그인 중...';
+            
+            const formData = {
+                email: email,
+                password: password
+            };
+            
+            fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+                }
+                return response.json();
+            })
+            .then(result => {
+                console.log('로그인 응답:', result);
+                if (result.accessToken) {
+                    // 토큰 저장
+                    localStorage.setItem('accessToken', result.accessToken);
+                    console.log('토큰 저장됨:', result.accessToken.substring(0, 20) + '...');
+                    console.log('localStorage에서 토큰 확인:', localStorage.getItem('accessToken') ? '존재' : '없음');
+                    
+                    // 로그인 정보 저장 (선택사항)
+                    if (rememberMe) {
+                        localStorage.setItem('savedEmail', email);
+                        localStorage.setItem('rememberMe', 'true');
+                    } else {
+                        localStorage.removeItem('savedEmail');
+                        localStorage.removeItem('rememberMe');
+                    }
+                    
+                    showAlert('로그인 성공! 메인 페이지로 이동합니다.', 'success');
+                    
+                    // 1.5초 후 메인 페이지로 이동
+                    setTimeout(() => {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const redirectUrl = urlParams.get('redirect') || '/';
+                        window.location.href = redirectUrl;
+                    }, 1500);
+                } else {
+                    throw new Error('로그인 응답이 올바르지 않습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                console.error('Error details:', error.message);
+                showAlert(error.message || '로그인 중 오류가 발생했습니다.');
+            })
+            .finally(() => {
+                // 로딩 상태 종료
+                loadingElement.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> 로그인';
+            });
+        });
+        
+        // 엔터 키로 폼 제출
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>

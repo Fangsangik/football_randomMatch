@@ -1,7 +1,7 @@
 package com.side.football_project.domain.match.service;
 
 import com.side.football_project.domain.reservation.repository.ReservationRepository;
-import com.side.football_project.domain.reservation.service.ReservationService;
+import com.side.football_project.domain.reservation.service.UserReservationService;
 import com.side.football_project.domain.stadium.entity.Stadium;
 import com.side.football_project.domain.stadium.entity.StadiumStatus;
 import com.side.football_project.domain.stadium.service.StadiumService;
@@ -27,7 +27,7 @@ class RandomMatchServiceTest {
     private RandomMatchService randomMatchService;
 
     @Mock
-    private ReservationService reservationService;
+    private UserReservationService reservationService;
 
     @Mock
     private ReservationRepository reservationRepository;

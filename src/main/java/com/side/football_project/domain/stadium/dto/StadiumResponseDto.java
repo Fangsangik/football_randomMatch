@@ -27,7 +27,7 @@ public class StadiumResponseDto {
         this.user = user;
     }
 
-    public static StadiumResponseDto toEntity(Stadium stadium) {
+    public static StadiumResponseDto toDto(Stadium stadium) {
         return StadiumResponseDto.builder()
                 .id(stadium.getId())
                 .name(stadium.getName())
@@ -36,5 +36,9 @@ public class StadiumResponseDto {
                 .capacity(stadium.getCapacity())
                 .user(stadium.getUser())
                 .build();
+    }
+    
+    public static StadiumResponseDto toEntity(Stadium stadium) {
+        return toDto(stadium);
     }
 }

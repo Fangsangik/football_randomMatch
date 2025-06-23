@@ -1,5 +1,6 @@
 package com.side.football_project.domain.shorts.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.side.football_project.domain.user.entity.User;
 import com.side.football_project.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -24,6 +25,7 @@ public class Shorts extends BaseEntity {
 
     private String url;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

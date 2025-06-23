@@ -1,16 +1,17 @@
 package com.side.football_project.domain.stadium.service;
 
-import com.side.football_project.domain.stadium.dto.StadiumRequestDto;
 import com.side.football_project.domain.stadium.dto.StadiumResponseDto;
-import com.side.football_project.domain.stadium.dto.StadiumUpdateDto;
 import com.side.football_project.domain.stadium.entity.Stadium;
-import com.side.football_project.domain.user.entity.User;
+
+import java.util.List;
 
 public interface StadiumService {
-    StadiumResponseDto createStadium(StadiumRequestDto requestDto, User user);
     StadiumResponseDto findStadium(Long id);
-    StadiumUpdateDto updateStadium(StadiumUpdateDto requestDto, User user);
     Stadium findByIdWithLock(Long id);
+
     Stadium findStadiumById(Long id);
-    void deleteStadium(Long id, User user);
+    // 사용자용 검색 메서드들
+    List<StadiumResponseDto> searchStadiums(String region, String keyword, int page, int size);
+    List<StadiumResponseDto> findNearbyStadiums(Double latitude, Double longitude, Double radiusKm, int page, int size);
+    StadiumResponseDto findById(Long stadiumId);
 }

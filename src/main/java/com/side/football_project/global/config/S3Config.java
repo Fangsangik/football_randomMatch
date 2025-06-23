@@ -1,6 +1,7 @@
 package com.side.football_project.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -20,6 +21,7 @@ public class S3Config {
     private String region;
 
     @Bean
+    @ConditionalOnProperty(name = "cloud.aws.enabled", havingValue = "true", matchIfMissing = false)
     public S3Client s3Client() {
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
 

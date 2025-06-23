@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - Football Project</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .signup-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .signup-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transform: rotate(45deg);
+            z-index: 1;
+        }
+        
+        .signup-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo i {
+            font-size: 3.5rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .logo h1 {
+            color: #333;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.1rem;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .signup-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .signup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .signup-btn:active {
+            transform: translateY(0);
+        }
+        
+        .signup-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e5e9;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .auth-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .auth-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            margin: 0 10px;
+        }
+        
+        .auth-links a:hover {
+            color: #764ba2;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .alert-error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+        
+        .alert-success {
+            background: #efe;
+            color: #363;
+            border: 1px solid #cfc;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            margin-top: 10px;
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .password-strength {
+            margin-top: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .strength-weak { color: #e74c3c; }
+        .strength-medium { color: #f39c12; }
+        .strength-strong { color: #27ae60; }
+        
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 30px 25px;
+                margin: 10px;
+            }
+            
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-group input {
+                padding: 12px 15px 12px 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-content">
+            <div class="logo">
+                <i class="fas fa-user-plus"></i>
+                <h1>회원가입</h1>
+                <p>Football Project에 오신 것을 환영합니다</p>
+            </div>
+            
+            <div class="alert alert-error" id="errorAlert"></div>
+            <div class="alert alert-success" id="successAlert"></div>
+            
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="name">이름 *</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="name" name="name" required placeholder="홍길동" autocomplete="name">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">이메일 *</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="email" name="email" required placeholder="example@email.com" autocomplete="email">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">비밀번호 *</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" required placeholder="8자 이상 입력해주세요" autocomplete="new-password">
+                    </div>
+                    <div id="passwordStrength" class="password-strength"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">비밀번호 확인 *</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="비밀번호를 다시 입력해주세요" autocomplete="new-password">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phoneNumber">전화번호</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-phone input-icon"></i>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="010-1234-5678" autocomplete="tel">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">나이</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-calendar input-icon"></i>
+                        <input type="number" id="age" name="age" min="10" max="100" placeholder="25" autocomplete="age">
+                    </div>
+                </div>
+                
+                <button type="submit" class="signup-btn">
+                    <i class="fas fa-user-plus"></i> 회원가입
+                </button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner"></i> 회원가입 처리 중...
+            </div>
+            
+            <div class="divider">
+                <span>또는</span>
+            </div>
+            
+            <div class="auth-links">
+                <a href="/auth/login">
+                    <i class="fas fa-sign-in-alt"></i> 로그인하기
+                </a>
+                <span style="color: #ddd;">|</span>
+                <a href="/vendor/signup">
+                    <i class="fas fa-building"></i> 업체 가입
+                </a>
+                <span style="color: #ddd;">|</span>
+                <a href="/">
+                    <i class="fas fa-home"></i> 홈으로
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showAlert(message, type = 'error') {
+            const errorAlert = document.getElementById('errorAlert');
+            const successAlert = document.getElementById('successAlert');
+            
+            errorAlert.style.display = 'none';
+            successAlert.style.display = 'none';
+            
+            if (type === 'error') {
+                errorAlert.textContent = message;
+                errorAlert.style.display = 'block';
+            } else {
+                successAlert.textContent = message;
+                successAlert.style.display = 'block';
+            }
+        }
+        
+        // 비밀번호 강도 체크
+        function checkPasswordStrength(password) {
+            const strengthEl = document.getElementById('passwordStrength');
+            
+            if (password.length === 0) {
+                strengthEl.textContent = '';
+                return;
+            }
+            
+            let score = 0;
+            
+            // 길이 체크
+            if (password.length >= 8) score++;
+            if (password.length >= 12) score++;
+            
+            // 문자 종류 체크
+            if (/[a-z]/.test(password)) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+            
+            if (score < 3) {
+                strengthEl.textContent = '약함';
+                strengthEl.className = 'password-strength strength-weak';
+            } else if (score < 5) {
+                strengthEl.textContent = '보통';
+                strengthEl.className = 'password-strength strength-medium';
+            } else {
+                strengthEl.textContent = '강함';
+                strengthEl.className = 'password-strength strength-strong';
+            }
+        }
+        
+        // 이벤트 리스너
+        document.getElementById('password').addEventListener('input', function(e) {
+            checkPasswordStrength(e.target.value);
+        });
+        
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const phoneNumber = document.getElementById('phoneNumber').value.trim() || '';
+            const age = parseInt(document.getElementById('age').value) || 0;
+            
+            // 유효성 검사
+            if (!name || !email || !password || !confirmPassword) {
+                showAlert('이름, 이메일, 비밀번호는 필수 입력 항목입니다.');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showAlert('비밀번호가 일치하지 않습니다.');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showAlert('비밀번호는 8자 이상이어야 합니다.');
+                return;
+            }
+            
+            // 이메일 형식 검사
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAlert('올바른 이메일 형식을 입력해주세요.');
+                return;
+            }
+            
+            const loadingElement = document.getElementById('loading');
+            const submitBtn = document.querySelector('.signup-btn');
+            
+            // 로딩 상태 시작
+            loadingElement.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 회원가입 중...';
+            
+            const formData = {
+                name: name,
+                email: email,
+                password: password,
+                confirmPassword: confirmPassword,
+                phoneNumber: phoneNumber,
+                age: age,
+                userRole: 'NORMAL'
+            };
+            
+            fetch('/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 409) {
+                        throw new Error('이미 가입된 이메일입니다.');
+                    } else {
+                        throw new Error('회원가입에 실패했습니다.');
+                    }
+                }
+                return response.json();
+            })
+            .then(result => {
+                showAlert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.', 'success');
+                
+                // 폼 리셋
+                document.getElementById('signupForm').reset();
+                document.getElementById('passwordStrength').textContent = '';
+                
+                // 3초 후 로그인 페이지로 이동
+                setTimeout(() => {
+                    window.location.href = '/auth/login';
+                }, 2000);
+            })
+            .catch(error => {
+                showAlert(error.message || '회원가입 중 오류가 발생했습니다.');
+            })
+            .finally(() => {
+                // 로딩 상태 종료
+                loadingElement.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> 회원가입';
+            });
+        });
+        
+        // 엔터 키로 폼 제출
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('signupForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>

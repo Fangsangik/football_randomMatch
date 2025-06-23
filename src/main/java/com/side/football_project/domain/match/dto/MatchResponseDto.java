@@ -1,8 +1,8 @@
 package com.side.football_project.domain.match.dto;
 
 
-import com.side.football_project.domain.match.domain.Match;
-import com.side.football_project.domain.match.domain.MatchUser;
+import com.side.football_project.domain.match.entity.Match;
+import com.side.football_project.domain.match.entity.MatchUser;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>팀 상세보기 - Football Project</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+        }
+
+        .nav-links a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-3px);
+        }
+
+        .page-title {
+            color: white;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-title p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .team-info h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .team-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .capacity-section {
+            margin-bottom: 30px;
+        }
+
+        .capacity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .capacity-header h3 {
+            font-size: 1.3rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .capacity-stats {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .members-section h3 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .member-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .member-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .member-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .member-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-badge.leader {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .role-badge.member {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .member-email {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .actions-section {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn.success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .btn.success:hover {
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .btn.warning:hover {
+            box-shadow: 0 8px 20px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .btn.danger:hover {
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn.secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn.secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .error-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .error-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .empty-members {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-members i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .nav-links {
+                justify-content: center;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .page-title h1 {
+                font-size: 2rem;
+            }
+
+            .team-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .capacity-header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="nav">
+            <a href="/" class="logo">
+                <i class="fas fa-futbol"></i>
+                Football Project
+            </a>
+            <div class="nav-links">
+                <a href="/"><i class="fas fa-home"></i> 홈</a>
+                <a href="/matches"><i class="fas fa-trophy"></i> 매치</a>
+                <a href="/shorts/feed"><i class="fas fa-video"></i> 숏츠</a>
+                <div id="authStatus"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="page-title">
+                <h1><i class="fas fa-users"></i> 팀 상세보기</h1>
+                <p id="teamSubtitle">팀 정보를 확인하고 관리하세요</p>
+            </div>
+        </div>
+
+        <div class="alert success" id="successAlert"></div>
+        <div class="alert error" id="errorAlert"></div>
+
+        <div id="loadingContainer" class="loading">
+            <i class="fas fa-spinner"></i>
+            <h4>팀 정보를 불러오는 중...</h4>
+        </div>
+
+        <div id="errorContainer" class="error-state" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>팀을 찾을 수 없습니다</h3>
+            <p>요청하신 팀이 존재하지 않거나 삭제되었습니다.</p>
+            <button class="btn" onclick="goBack()" style="margin-top: 15px;">
+                <i class="fas fa-arrow-left"></i> 돌아가기
+            </button>
+        </div>
+
+        <div id="teamContent" style="display: none;">
+            <!-- 팀 기본 정보 -->
+            <div class="card">
+                <div class="team-header">
+                    <div class="team-info">
+                        <h2 id="teamName">팀 이름</h2>
+                        <div class="team-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                <span id="createdDate">생성일</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 팀 정원 현황 -->
+                <div class="capacity-section">
+                    <div class="capacity-header">
+                        <h3><i class="fas fa-chart-bar"></i> 팀 정원 현황</h3>
+                        <div class="capacity-stats">
+                            <span id="currentCount">0</span> / <span id="maxCount">0</span>명
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%;">
+                            <div class="progress-text" id="progressText">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 팀 통계 및 활동 -->
+                <div class="stats-section" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-chart-line"></i> 팀 통계</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                        <div class="stat-card" style="background: #f8f9fa; padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #667eea;" id="totalMatches">0</div>
+                            <div style="color: #666; font-size: 0.9rem;">총 경기 수</div>
+                        </div>
+                        <div class="stat-card" style="background: #f8f9fa; padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #27ae60;" id="winRate">0%</div>
+                            <div style="color: #666; font-size: 0.9rem;">승률</div>
+                        </div>
+                        <div class="stat-card" style="background: #f8f9fa; padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #e67e22;" id="teamRank">-</div>
+                            <div style="color: #666; font-size: 0.9rem;">팀 랭킹</div>
+                        </div>
+                        <div class="stat-card" style="background: #f8f9fa; padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #9b59b6;" id="activeDays">0</div>
+                            <div style="color: #666; font-size: 0.9rem;">활동 일수</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 최근 활동 -->
+                <div class="activities-section" style="margin-bottom: 30px;">
+                    <h3><i class="fas fa-history"></i> 최근 활동</h3>
+                    <div id="recentActivities" style="background: #f8f9fa; border-radius: 12px; padding: 20px;">
+                        <div class="loading" style="text-align: center; color: #666;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>최근 활동을 불러오는 중...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 팀 멤버 목록 -->
+                <div class="members-section">
+                    <h3><i class="fas fa-user-friends"></i> 팀 멤버</h3>
+                    <div id="membersContainer">
+                        <div class="members-grid" id="membersGrid">
+                            <!-- 멤버 카드들이 여기에 동적으로 추가됩니다 -->
+                        </div>
+                        <div class="empty-members" id="emptyMembers" style="display: none;">
+                            <i class="fas fa-user-plus"></i>
+                            <h4>아직 멤버가 없습니다</h4>
+                            <p>첫 번째 멤버가 되어보세요!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 액션 버튼들 -->
+                <div class="actions-section" id="actionsSection">
+                    <div class="actions-grid" id="actionsGrid">
+                        <!-- 버튼들이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        let currentTeam = null;
+        let currentUser = null;
+        
+        // 페이지 로드시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAuthStatus();
+            loadTeamDetail();
+        });
+
+        // URL에서 팀 ID 가져오기
+        function getTeamIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // 뒤로가기
+        function goBack() {
+            window.history.back();
+        }
+
+        // 팀 상세 정보 로드
+        function loadTeamDetail() {
+            const teamId = getTeamIdFromUrl();
+            
+            if (!teamId) {
+                showError('팀 ID가 지정되지 않았습니다.');
+                return;
+            }
+
+            // 팀 정보 가져오기
+            fetch(`/teams/${teamId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('팀을 찾을 수 없습니다.');
+                    }
+                    return response.json();
+                })
+                .then(team => {
+                    currentTeam = team;
+                    displayTeamInfo(team);
+                    loadTeamMembers(team);
+                    loadTeamStatistics(team);
+                    loadRecentActivities(team);
+                    setupActionButtons(team);
+                    
+                    document.getElementById('loadingContainer').style.display = 'none';
+                    document.getElementById('teamContent').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('팀 로드 오류:', error);
+                    showError(error.message);
+                });
+        }
+
+        // 팀 기본 정보 표시
+        function displayTeamInfo(team) {
+            document.getElementById('teamName').textContent = team.teamName;
+            document.getElementById('teamSubtitle').textContent = `${team.teamName} 팀의 상세 정보`;
+            document.getElementById('createdDate').textContent = formatDate(team.createdAt);
+            
+            // 정원 현황 업데이트
+            const currentCount = team.currentHeadCount || 0;
+            const maxCount = team.headCount || 0;
+            const percentage = maxCount > 0 ? Math.round((currentCount / maxCount) * 100) : 0;
+            
+            document.getElementById('currentCount').textContent = currentCount;
+            document.getElementById('maxCount').textContent = maxCount;
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = percentage + '%';
+        }
+
+        // 팀 멤버 로드
+        function loadTeamMembers(team) {
+            const membersGrid = document.getElementById('membersGrid');
+            const emptyMembers = document.getElementById('emptyMembers');
+            
+            // 실제 API에서 팀 멤버 데이터 가져오기
+            fetch(`/teams/${team.id}/members`, {
+                headers: token ? {
+                    'Authorization': 'Bearer ' + token
+                } : {}
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('멤버 목록을 불러올 수 없습니다.');
+                }
+                return response.json();
+            })
+            .then(members => {
+                displayMembers(members, membersGrid, emptyMembers);
+            })
+            .catch(error => {
+                console.error('멤버 로드 오류:', error);
+                // 오류 발생시 빈 상태로 표시
+                displayMembers([], membersGrid, emptyMembers);
+            });
+        }
+
+        // 멤버 목록 표시
+        function displayMembers(members, membersGrid, emptyMembers) {
+            if (members.length === 0) {
+                membersGrid.style.display = 'none';
+                emptyMembers.style.display = 'block';
+                return;
+            }
+
+            membersGrid.style.display = 'grid';
+            emptyMembers.style.display = 'none';
+            
+            membersGrid.innerHTML = '';
+            members.forEach(member => {
+                const memberCard = createMemberCard(member);
+                membersGrid.appendChild(memberCard);
+            });
+        }
+
+        // 멤버 카드 생성
+        function createMemberCard(member) {
+            const card = document.createElement('div');
+            card.className = 'member-card';
+            
+            const roleClass = member.role === 'LEADER' ? 'leader' : 'member';
+            const roleText = member.role === 'LEADER' ? '팀장' : '멤버';
+            
+            card.innerHTML = `
+                <div class="member-header">
+                    <div class="member-name">${member.name || member.username || '이름 없음'}</div>
+                    <div class="role-badge ${roleClass}">${roleText}</div>
+                </div>
+                <div class="member-email">${member.email || '이메일 없음'}</div>
+                <div class="member-actions" style="margin-top: 10px; display: flex; gap: 5px; justify-content: flex-end;">
+                    ${canManageMembers() && member.role !== 'LEADER' ? `
+                        <button class="btn danger" style="padding: 6px 12px; font-size: 0.8rem;" onclick="removeMember(${member.id})">
+                            <i class="fas fa-user-minus"></i> 제거
+                        </button>
+                    ` : ''}
+                    ${canManageMembers() && member.role !== 'LEADER' ? `
+                        <button class="btn warning" style="padding: 6px 12px; font-size: 0.8rem;" onclick="promoteToLeader(${member.id})">
+                            <i class="fas fa-crown"></i> 팀장 임명
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // 액션 버튼 설정
+        function setupActionButtons(team) {
+            const actionsGrid = document.getElementById('actionsGrid');
+            const actionsSection = document.getElementById('actionsSection');
+            
+            if (!token) {
+                actionsSection.style.display = 'none';
+                return;
+            }
+
+            actionsGrid.innerHTML = '';
+            
+            // 현재 사용자 정보 확인
+            checkUserMembershipStatus(team.id).then(userStatus => {
+                currentUser = userStatus;
+                
+                // 팀 가입 버튼 (정원이 남아있고 아직 가입하지 않은 경우)
+                if (!userStatus.isMember && team.currentHeadCount < team.headCount) {
+                    const joinBtn = document.createElement('button');
+                    joinBtn.className = 'btn success';
+                    joinBtn.innerHTML = '<i class="fas fa-plus"></i> 팀 가입하기';
+                    joinBtn.onclick = () => joinTeam(team.id);
+                    actionsGrid.appendChild(joinBtn);
+                }
+
+                // 팀 탈퇴 버튼 (멤버이지만 팀장이 아닌 경우)
+                if (userStatus.isMember && !userStatus.isLeader) {
+                    const leaveBtn = document.createElement('button');
+                    leaveBtn.className = 'btn warning';
+                    leaveBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> 팀 탈퇴하기';
+                    leaveBtn.onclick = () => leaveTeam(team.id);
+                    actionsGrid.appendChild(leaveBtn);
+                }
+
+                // 멤버 초대 버튼 (팀장인 경우)
+                if (userStatus.isLeader) {
+                    const inviteBtn = document.createElement('button');
+                    inviteBtn.className = 'btn success';
+                    inviteBtn.innerHTML = '<i class="fas fa-user-plus"></i> 멤버 초대하기';
+                    inviteBtn.onclick = () => showInviteMemberModal(team);
+                    actionsGrid.appendChild(inviteBtn);
+                }
+
+                // 팀 수정 버튼 (팀 리더인 경우)
+                if (userStatus.isLeader) {
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'btn warning';
+                    editBtn.innerHTML = '<i class="fas fa-edit"></i> 팀 수정하기';
+                    editBtn.onclick = () => showEditTeamModal(team);
+                    actionsGrid.appendChild(editBtn);
+                }
+
+                // 팀 삭제 버튼 (팀 리더인 경우)
+                if (userStatus.isLeader) {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn danger';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i> 팀 삭제하기';
+                    deleteBtn.onclick = () => deleteTeam(team.id);
+                    actionsGrid.appendChild(deleteBtn);
+                }
+
+                // 버튼이 하나도 없으면 섹션 숨기기
+                if (actionsGrid.children.length === 0) {
+                    actionsSection.style.display = 'none';
+                }
+            });
+        }
+
+        // 팀 가입
+        function joinTeam(teamId) {
+            if (!token) {
+                showAlert('로그인이 필요합니다.', 'error');
+                return;
+            }
+            
+            if (!confirm('이 팀에 가입하시겠습니까?')) {
+                return;
+            }
+            
+            fetch(`/teams/${teamId}/join`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('팀 가입에 실패했습니다.');
+                }
+                return response.text();
+            })
+            .then(message => {
+                showAlert('팀에 성공적으로 가입되었습니다!', 'success');
+                // 페이지 새로고침하여 업데이트된 정보 표시
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            })
+            .catch(error => {
+                showAlert(error.message || '팀 가입 중 오류가 발생했습니다.', 'error');
+            });
+        }
+
+        // 팀 수정 모달 표시 (간단한 구현)
+        function showEditTeamModal(team) {
+            const newName = prompt('새로운 팀 이름을 입력하세요:', team.teamName);
+            if (!newName || newName.trim() === '') return;
+            
+            const newHeadCount = prompt('새로운 정원을 입력하세요:', team.headCount);
+            if (!newHeadCount || isNaN(newHeadCount)) return;
+            
+            updateTeam(team.id, {
+                teamName: newName.trim(),
+                headCount: parseInt(newHeadCount)
+            });
+        }
+
+        // 팀 수정
+        function updateTeam(teamId, updateData) {
+            if (!token) {
+                showAlert('로그인이 필요합니다.', 'error');
+                return;
+            }
+            
+            fetch(`/teams/${teamId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('팀 수정에 실패했습니다.');
+                }
+                return response.text();
+            })
+            .then(message => {
+                showAlert('팀 정보가 성공적으로 수정되었습니다!', 'success');
+                // 페이지 새로고침하여 업데이트된 정보 표시
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            })
+            .catch(error => {
+                showAlert(error.message || '팀 수정 중 오류가 발생했습니다.', 'error');
+            });
+        }
+
+        // 팀 삭제
+        function deleteTeam(teamId) {
+            if (!token) {
+                showAlert('로그인이 필요합니다.', 'error');
+                return;
+            }
+            
+            if (!confirm('정말로 이 팀을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                return;
+            }
+            
+            fetch(`/teams/${teamId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('팀 삭제에 실패했습니다.');
+                }
+                return response.text();
+            })
+            .then(message => {
+                showAlert('팀이 성공적으로 삭제되었습니다!', 'success');
+                // 팀 목록 페이지로 이동
+                setTimeout(() => {
+                    window.location.href = '/teams';
+                }, 1500);
+            })
+            .catch(error => {
+                showAlert(error.message || '팀 삭제 중 오류가 발생했습니다.', 'error');
+            });
+        }
+
+        // 오류 표시
+        function showError(message) {
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'block';
+            
+            const errorMsg = document.querySelector('#errorContainer p');
+            if (errorMsg) {
+                errorMsg.textContent = message;
+            }
+        }
+
+        // 알림 표시
+        function showAlert(message, type = 'success') {
+            const successAlert = document.getElementById('successAlert');
+            const errorAlert = document.getElementById('errorAlert');
+            
+            successAlert.style.display = 'none';
+            errorAlert.style.display = 'none';
+            
+            if (type === 'success') {
+                successAlert.textContent = message;
+                successAlert.style.display = 'block';
+                setTimeout(() => successAlert.style.display = 'none', 5000);
+            } else {
+                errorAlert.textContent = message;
+                errorAlert.style.display = 'block';
+                setTimeout(() => errorAlert.style.display = 'none', 5000);
+            }
+            
+            // 상단으로 스크롤
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 날짜 포맷팅
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        // 인증 상태 업데이트
+        function updateAuthStatus() {
+            const authStatusEl = document.getElementById('authStatus');
+            const currentToken = localStorage.getItem('accessToken');
+            const adminToken = localStorage.getItem('adminToken');
+            const vendorToken = localStorage.getItem('vendorToken');
+            
+            if (currentToken || adminToken || vendorToken) {
+                let userType = '';
+                if (adminToken) userType = '관리자';
+                else if (vendorToken) userType = '업체';
+                else userType = '사용자';
+                
+                authStatusEl.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="color: #27ae60; font-size: 0.9rem;">
+                            <i class="fas fa-check-circle"></i> ${userType}
+                        </span>
+                        <button onclick="logout()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                            <i class="fas fa-sign-out-alt"></i> 로그아웃
+                        </button>
+                    </div>
+                `;
+            } else {
+                authStatusEl.innerHTML = `
+                    <a href="/auth/login" style="color: #333; text-decoration: none; font-weight: 500; padding: 8px 16px;">
+                        <i class="fas fa-sign-in-alt"></i> 로그인
+                    </a>
+                `;
+            }
+        }
+        
+        // 로그아웃 함수
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('vendorToken');
+                window.location.reload();
+            }
+        }
+
+        // 팀 통계 로드
+        function loadTeamStatistics(team) {
+            fetch(`/teams/${team.id}/statistics`, {
+                headers: token ? {
+                    'Authorization': 'Bearer ' + token
+                } : {}
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('통계를 불러올 수 없습니다.');
+                }
+                return response.json();
+            })
+            .then(stats => {
+                displayTeamStatistics(stats);
+            })
+            .catch(error => {
+                console.error('팀 통계 로드 오류:', error);
+                // 오류 발생시 기본값으로 표시
+                displayTeamStatistics({
+                    totalMatches: 0,
+                    winRate: 0,
+                    teamRank: '-',
+                    activeDays: 0
+                });
+            });
+        }
+
+        // 팀 통계 표시
+        function displayTeamStatistics(stats) {
+            document.getElementById('totalMatches').textContent = stats.totalMatches || 0;
+            document.getElementById('winRate').textContent = (stats.winRate || 0) + '%';
+            document.getElementById('teamRank').textContent = stats.teamRank || '-';
+            document.getElementById('activeDays').textContent = stats.activeDays || 0;
+        }
+
+        // 최근 활동 로드
+        function loadRecentActivities(team) {
+            fetch(`/teams/${team.id}/recent-activities`, {
+                headers: token ? {
+                    'Authorization': 'Bearer ' + token
+                } : {}
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('최근 활동을 불러올 수 없습니다.');
+                }
+                return response.json();
+            })
+            .then(activities => {
+                displayRecentActivities(activities);
+            })
+            .catch(error => {
+                console.error('최근 활동 로드 오류:', error);
+                // 오류 발생시 빈 활동으로 표시
+                displayRecentActivities([]);
+            });
+        }
+
+        // 최근 활동 표시
+        function displayRecentActivities(activities) {
+            const container = document.getElementById('recentActivities');
+            
+            if (activities.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 20px;">
+                        <i class="fas fa-calendar-times" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+                        <h4>최근 활동이 없습니다</h4>
+                        <p>팀 활동을 시작해보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const activitiesHtml = activities.map(activity => `
+                <div style="border-bottom: 1px solid #eee; padding: 15px 0; display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 40px; height: 40px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas ${getActivityIcon(activity.type)}"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 4px;">${activity.title}</div>
+                        <div style="color: #666; font-size: 0.9rem;">${activity.description}</div>
+                        <div style="color: #999; font-size: 0.8rem; margin-top: 4px;">${formatDate(activity.createdAt)}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = activitiesHtml;
+        }
+
+        // 활동 타입별 아이콘 반환
+        function getActivityIcon(type) {
+            switch(type) {
+                case 'MATCH': return 'fa-trophy';
+                case 'MEMBER_JOIN': return 'fa-user-plus';
+                case 'MEMBER_LEAVE': return 'fa-user-minus';
+                case 'TEAM_UPDATE': return 'fa-edit';
+                default: return 'fa-bell';
+            }
+        }
+
+        // 사용자 멤버십 상태 확인
+        function checkUserMembershipStatus(teamId) {
+            return fetch(`/teams/${teamId}/membership-status`, {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('멤버십 상태를 확인할 수 없습니다.');
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.error('멤버십 상태 확인 오류:', error);
+                return { isMember: false, isLeader: false };
+            });
+        }
+
+        // 멤버 관리 권한 확인
+        function canManageMembers() {
+            return currentUser && currentUser.isLeader;
+        }
+
+        // 팀 탈퇴
+        function leaveTeam(teamId) {
+            if (!token) {
+                showAlert('로그인이 필요합니다.', 'error');
+                return;
+            }
+            
+            if (!confirm('정말로 이 팀에서 탈퇴하시겠습니까?')) {
+                return;
+            }
+            
+            fetch(`/teams/${teamId}/leave`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('팀 탈퇴에 실패했습니다.');
+                }
+                return response.text();
+            })
+            .then(message => {
+                showAlert('팀에서 성공적으로 탈퇴하였습니다.', 'success');
+                setTimeout(() => {
+                    window.location.href = '/teams';
+                }, 1500);
+            })
+            .catch(error => {
+                showAlert(error.message || '팀 탈퇴 중 오류가 발생했습니다.', 'error');
+            });
+        }
+
+        // 멤버 초대 모달 표시
+        function showInviteMemberModal(team) {
+            const email = prompt('초대할 멤버의 이메일을 입력하세요:');
+            if (!email || email.trim() === '') return;
+            
+            inviteMember(team.id, email.trim());
+        }
+
+        // 멤버 초대
+        function inviteMember(teamId, email) {
+            if (!token) {
+                showAlert('로그인이 필요합니다.', 'error');
+                return;
+            }
+            
+            fetch(`/teams/${teamId}/invite`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('멤버 초대에 실패했습니다.');
+                }
+                return response.text();
+            })
+            .then(message => {
+                showAlert('멤버 초대가 성공적으로 전송되었습니다!', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            })
+            .catch(error => {
+                showAlert(error.message || '멤버 초대 중 오류가 발생했습니다.', 'error');
+            });
+        }
+
+        // 멤버 제거
+        function removeMember(memberId) {
+            if (!token) {
+                showAlert('로그인이 필요합니다.', 'error');
+                return;
+            }
+            
+            if (!confirm('정말로 이 멤버를 팀에서 제거하시겠습니까?')) {
+                return;
+            }
+            
+            fetch(`/teams/${currentTeam.id}/members/${memberId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('멤버 제거에 실패했습니다.');
+                }
+                return response.text();
+            })
+            .then(message => {
+                showAlert('멤버가 성공적으로 제거되었습니다.', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            })
+            .catch(error => {
+                showAlert(error.message || '멤버 제거 중 오류가 발생했습니다.', 'error');
+            });
+        }
+
+        // 팀장 임명
+        function promoteToLeader(memberId) {
+            if (!token) {
+                showAlert('로그인이 필요합니다.', 'error');
+                return;
+            }
+            
+            if (!confirm('이 멤버를 새로운 팀장으로 임명하시겠습니까? 현재 팀장 권한은 이양됩니다.')) {
+                return;
+            }
+            
+            fetch(`/teams/${currentTeam.id}/promote-leader`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ memberId: memberId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('팀장 임명에 실패했습니다.');
+                }
+                return response.text();
+            })
+            .then(message => {
+                showAlert('새로운 팀장이 성공적으로 임명되었습니다.', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            })
+            .catch(error => {
+                showAlert(error.message || '팀장 임명 중 오류가 발생했습니다.', 'error');
+            });
+        }
+    </script>
+</body>
+</html>

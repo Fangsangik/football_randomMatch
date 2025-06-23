@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숏츠 피드 - Football Project</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #333;
+        }
+        
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .nav-links a:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .container {
+            margin-top: 80px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+        
+        .create-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .create-section h3 {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            box-sizing: border-box;
+        }
+        
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-color: transparent;
+        }
+        
+        .btn-primary:hover {
+            background: white;
+            color: #333;
+        }
+        
+        .shorts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .shorts-card {
+            background: #111;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #333;
+        }
+        
+        .shorts-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #000;
+            border-radius: 15px 15px 0 0;
+            overflow: hidden;
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .video-container:hover .video-overlay {
+            opacity: 1;
+        }
+        
+        .play-button {
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .play-button:hover {
+            background: #667eea;
+            transform: scale(1.1);
+        }
+        
+        .shorts-info {
+            padding: 20px;
+        }
+        
+        .shorts-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+            line-height: 1.3;
+        }
+        
+        .shorts-description {
+            color: #bbb;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+        
+        .shorts-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #888;
+            font-size: 0.85rem;
+        }
+        
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .upload-date {
+            font-size: 0.8rem;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            display: none;
+        }
+        
+        .alert-error {
+            background: rgba(220, 53, 69, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+        
+        .alert-success {
+            background: rgba(40, 167, 69, 0.2);
+            color: #51cf66;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            margin: 40px 0;
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #444;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #bbb;
+        }
+        
+        .empty-state p {
+            font-size: 1rem;
+            color: #888;
+        }
+        
+        .auth-required {
+            text-align: center;
+            padding: 30px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .auth-required h4 {
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .auth-required p {
+            color: #bbb;
+            margin-bottom: 15px;
+        }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .sidebar {
+                position: static;
+                order: -1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+                padding: 15px;
+            }
+            
+            .nav-links {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .container {
+                margin-top: 120px;
+                padding: 15px;
+            }
+            
+            .shorts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .create-section {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .video-container {
+                height: 300px;
+            }
+            
+            .container {
+                margin-top: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="nav">
+            <a href="/" class="logo">
+                <i class="fas fa-futbol"></i>
+                Football Project
+            </a>
+            <div class="nav-links">
+                <a href="/"><i class="fas fa-home"></i> 홈</a>
+                <a href="/matches"><i class="fas fa-trophy"></i> 매치</a>
+                <a href="/teams"><i class="fas fa-users"></i> 팀</a>
+                <div id="authStatus"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="actions">
+                <button class="btn btn-primary" onclick="toggleCreateForm()">
+                    <i class="fas fa-plus"></i> 새 숏츠 업로드
+                </button>
+                <button class="btn" onclick="loadShorts()">
+                    <i class="fas fa-refresh"></i> 새로고침
+                </button>
+            </div>
+            
+            <div class="alert alert-error" id="errorAlert"></div>
+            <div class="alert alert-success" id="successAlert"></div>
+            
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner"></i>
+                <p>숏츠를 불러오는 중...</p>
+            </div>
+            
+            <div class="shorts-grid" id="shortsGrid">
+                <!-- 숏츠 카드들이 여기에 동적으로 추가됨 -->
+            </div>
+            
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fas fa-video"></i>
+                <h3>아직 업로드된 숏츠가 없습니다</h3>
+                <p>첫 번째 축구 숏츠를 업로드해보세요!</p>
+            </div>
+        </div>
+        
+        <div class="sidebar">
+            <!-- 숏츠 생성 폼 -->
+            <div class="create-section" id="createForm" style="display: none;">
+                <h3><i class="fas fa-video"></i> 새 숏츠 업로드</h3>
+                <div id="createShortsSection">
+                    <form id="shortsForm">
+                        <div class="form-group">
+                            <label for="title">제목 *</label>
+                            <input type="text" id="title" name="title" required placeholder="멋진 골 장면!">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description">설명</label>
+                            <textarea id="description" name="description" placeholder="이 숏츠에 대한 설명을 입력하세요..." rows="4"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="url">동영상 URL *</label>
+                            <input type="url" id="url" name="url" required placeholder="https://youtube.com/watch?v=...">
+                            <small style="color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-top: 5px; display: block;">
+                                * YouTube, TikTok, Instagram 등의 동영상 링크를 입력하세요
+                            </small>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" class="btn" onclick="cancelCreate()">
+                                <i class="fas fa-times"></i> 취소
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload"></i> 업로드
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div id="loginRequired" class="auth-required" style="display: none;">
+                    <i class="fas fa-lock"></i>
+                    <h4>로그인이 필요합니다</h4>
+                    <p>숏츠를 업로드하려면 로그인해주세요.</p>
+                    <a href="/auth/login" class="btn">
+                        <i class="fas fa-sign-in-alt"></i> 로그인하기
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 숏츠 통계 -->
+            <div class="create-section">
+                <h3><i class="fas fa-chart-bar"></i> 숏츠 현황</h3>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                    <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                        <div style="font-size: 1.8rem; font-weight: bold; color: white;" id="totalShorts">0</div>
+                        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">전체 숏츠</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                        <div style="font-size: 1.8rem; font-weight: bold; color: white;" id="myShorts">0</div>
+                        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">내 숏츠</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 전역 변수
+        let isFormVisible = false;
+        const token = localStorage.getItem('accessToken');
+        
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            updateAuthStatus();
+            loadShorts();
+            
+            // 숏츠 생성 폼 제출 이벤트
+            document.getElementById('shortsForm').addEventListener('submit', handleShortsCreate);
+        });
+        
+        // 인증 상태 확인
+        function checkAuthStatus() {
+            if (!token) {
+                document.getElementById('createShortsSection').style.display = 'none';
+                document.getElementById('loginRequired').style.display = 'block';
+            }
+        }
+        
+        // 알림 표시 함수
+        function showAlert(message, type = 'error') {
+            const errorAlert = document.getElementById('errorAlert');
+            const successAlert = document.getElementById('successAlert');
+            
+            errorAlert.style.display = 'none';
+            successAlert.style.display = 'none';
+            
+            if (type === 'error') {
+                errorAlert.textContent = message;
+                errorAlert.style.display = 'block';
+            } else {
+                successAlert.textContent = message;
+                successAlert.style.display = 'block';
+            }
+            
+            // 3초 후 자동 숨김
+            setTimeout(() => {
+                errorAlert.style.display = 'none';
+                successAlert.style.display = 'none';
+            }, 3000);
+            
+            // 상단으로 스크롤
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // 로딩 상태 관리
+        function setLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        // 숏츠 생성 폼 토글
+        function toggleCreateForm() {
+            const form = document.getElementById('createForm');
+            isFormVisible = !isFormVisible;
+            form.style.display = isFormVisible ? 'block' : 'none';
+            
+            if (isFormVisible) {
+                document.getElementById('title').focus();
+            }
+        }
+        
+        // 숏츠 생성 취소
+        function cancelCreate() {
+            document.getElementById('shortsForm').reset();
+            toggleCreateForm();
+        }
+        
+        // 숏츠 생성 처리
+        async function handleShortsCreate(event) {
+            event.preventDefault();
+            
+            const currentToken = localStorage.getItem('accessToken');
+            if (!currentToken) {
+                showAlert('로그인이 필요합니다.');
+                return;
+            }
+            
+            const formData = new FormData(event.target);
+            const requestData = {
+                title: formData.get('title'),
+                description: formData.get('description') || '',
+                url: formData.get('url')
+            };
+            
+            try {
+                setLoading(true);
+                
+                const response = await fetch('/shorts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('숏츠 업로드에 실패했습니다.');
+                }
+                
+                const result = await response.json();
+                showAlert('숏츠가 성공적으로 업로드되었습니다!', 'success');
+                
+                // 폼 리셋 및 숨김
+                event.target.reset();
+                toggleCreateForm();
+                
+                // 숏츠 목록 새로고침
+                loadShorts();
+                
+            } catch (error) {
+                console.error('Error creating shorts:', error);
+                showAlert(error.message || '숏츠 업로드 중 오류가 발생했습니다.');
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        // 숏츠 목록 로드
+        async function loadShorts() {
+            const token = localStorage.getItem('accessToken');
+            
+            // 토큰이 없으면 로그인 안내 표시
+            if (!token) {
+                const grid = document.getElementById('shortsGrid');
+                grid.innerHTML = `
+                    <div class="auth-required" style="grid-column: 1 / -1;">
+                        <i class="fas fa-lock"></i>
+                        <h3>로그인이 필요합니다</h3>
+                        <p>숏츠 피드를 보려면 로그인해주세요.</p>
+                        <a href="/auth/login?redirect=/shorts" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> 로그인하기
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                setLoading(true);
+                const response = await fetch('/shorts/feed', {
+                    headers: token ? {
+                        'Authorization': 'Bearer ' + token
+                    } : {}
+                });
+                
+                if (!response.ok) {
+                    throw new Error('숏츠 목록을 불러올 수 없습니다.');
+                }
+                
+                const shorts = await response.json();
+                updateShortsStats(shorts);
+                displayShorts(shorts);
+                
+            } catch (error) {
+                console.error('Error loading shorts:', error);
+                showAlert(error.message || '숏츠 목록 로딩 중 오류가 발생했습니다.');
+                document.getElementById('emptyState').style.display = 'block';
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        // 숏츠 통계 업데이트
+        function updateShortsStats(shorts) {
+            document.getElementById('totalShorts').textContent = shorts.length;
+            // TODO: 현재 사용자의 숏츠 개수 계산
+            document.getElementById('myShorts').textContent = '0';
+        }
+        
+        // 숏츠 목록 표시
+        function displayShorts(shorts) {
+            const grid = document.getElementById('shortsGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (!shorts || shorts.length === 0) {
+                grid.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            grid.innerHTML = shorts.map(short => `
+                <div class="shorts-card">
+                    <div class="video-container" onclick="playVideo('${short.url}')">
+                        <img src="${getVideoThumbnail(short.url)}" alt="${short.title}" class="video-thumbnail" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiBmaWxsPSIjNjY3ZWVhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1zaXplPSI0OCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIj7irZjrk5w8L3RleHQ+Cjwvc3ZnPg=='">
+                        <div class="video-overlay">
+                            <button class="play-button">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="shorts-info">
+                        <div class="shorts-title">${short.title}</div>
+                        ${short.description ? `<div class="shorts-description">${short.description}</div>` : ''}
+                        <div class="shorts-meta">
+                            <div class="author-info">
+                                <i class="fas fa-user"></i>
+                                <span>${short.authorName || '익명'}</span>
+                            </div>
+                            <div class="upload-date">
+                                ${short.createdAt ? formatDate(short.createdAt) : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 동영상 썸네일 추출
+        function getVideoThumbnail(url) {
+            // YouTube URL에서 썸네일 추출
+            const youtubeRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/;
+            const youtubeMatch = url.match(youtubeRegex);
+            
+            if (youtubeMatch) {
+                return `https://img.youtube.com/vi/${youtubeMatch[1]}/maxresdefault.jpg`;
+            }
+            
+            // 기본 썸네일 (비디오 아이콘)
+            return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjMTExIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiBmaWxsPSIjNjY3ZWVhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1zaXplPSI2NCIgZm9udC1mYW1pbHk9IkZvbnRBd2Vzb21lIj7wn5qAPIGI8L3RleHQ+Cjwvc3ZnPg==';
+        }
+        
+        // 동영상 재생
+        function playVideo(url) {
+            // 새 창에서 동영상 열기
+            window.open(url, '_blank');
+        }
+        
+        // 날짜 포맷팅
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                return '오늘';
+            } else if (diffDays === 1) {
+                return '어제';
+            } else if (diffDays < 7) {
+                return `${diffDays}일 전`;
+            } else {
+                return date.toLocaleDateString('ko-KR');
+            }
+        }
+        
+        // URL 유효성 검사
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
+        // 폼 유효성 검사
+        document.getElementById('url').addEventListener('input', function(e) {
+            const url = e.target.value;
+            if (url && !isValidUrl(url)) {
+                e.target.setCustomValidity('올바른 URL 형식을 입력해주세요.');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+        
+        // 인증 상태 업데이트
+        function updateAuthStatus() {
+            const authStatusEl = document.getElementById('authStatus');
+            const currentToken = localStorage.getItem('accessToken');
+            const adminToken = localStorage.getItem('adminToken');
+            const vendorToken = localStorage.getItem('vendorToken');
+            
+            if (currentToken || adminToken || vendorToken) {
+                let userType = '';
+                if (adminToken) userType = '관리자';
+                else if (vendorToken) userType = '업체';
+                else userType = '사용자';
+                
+                authStatusEl.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="color: #51cf66; font-size: 0.9rem;">
+                            <i class="fas fa-check-circle"></i> ${userType}
+                        </span>
+                        <button onclick="logout()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                            <i class="fas fa-sign-out-alt"></i> 로그아웃
+                        </button>
+                    </div>
+                `;
+            } else {
+                authStatusEl.innerHTML = `
+                    <a href="/auth/login" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px;">
+                        <i class="fas fa-sign-in-alt"></i> 로그인
+                    </a>
+                `;
+            }
+        }
+        
+        // 로그아웃 함수
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('vendorToken');
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

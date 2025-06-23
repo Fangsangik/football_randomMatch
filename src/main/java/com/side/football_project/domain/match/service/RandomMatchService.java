@@ -1,9 +1,9 @@
 package com.side.football_project.domain.match.service;
 
-import com.side.football_project.domain.reservation.domain.Reservation;
+import com.side.football_project.domain.reservation.entity.Reservation;
 import com.side.football_project.domain.reservation.dto.ReservationRequestDto;
 import com.side.football_project.domain.reservation.repository.ReservationRepository;
-import com.side.football_project.domain.reservation.service.ReservationService;
+import com.side.football_project.domain.reservation.service.UserReservationService;
 import com.side.football_project.domain.stadium.entity.Stadium;
 import com.side.football_project.domain.stadium.service.StadiumService;
 import com.side.football_project.domain.user.entity.User;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class RandomMatchService implements RandomService {
 
-    private final ReservationService reservationService;
+    private final UserReservationService reservationService;
     private final Map<String, Queue<User>> matchQueue = new ConcurrentHashMap<>();
     private final List<UserTier> tiers = List.of(UserTier.ROOKIE, UserTier.BEGINNER, UserTier.AMATEUR, UserTier.SEMI_PRO, UserTier.PRO);
     private final ReservationRepository reservationRepository;

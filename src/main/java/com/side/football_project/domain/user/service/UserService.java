@@ -1,18 +1,20 @@
 package com.side.football_project.domain.user.service;
 
+import com.side.football_project.domain.admin.entity.Admin;
+import com.side.football_project.domain.user.dto.LoginRequestDto;
+import com.side.football_project.domain.user.dto.LoginResponseDto;
 import com.side.football_project.domain.user.dto.UserPasswordUpdateDto;
 import com.side.football_project.domain.user.dto.UserRequestDto;
 import com.side.football_project.domain.user.dto.UserResponseDto;
 import com.side.football_project.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 
 public interface UserService {
     UserResponseDto createUser(UserRequestDto requestDto);
 
-    void login(UserRequestDto requestDto);
+    LoginResponseDto login(LoginRequestDto requestDto);
 
     UserResponseDto findUser(Long userId, User user);
 
@@ -27,4 +29,10 @@ public interface UserService {
     User findUserById(Long userId);
 
     List<User> getAllUser();
+
+    void checkAdminRole(Admin admin);
+
+    void logout(HttpServletRequest request);
+    
+    LoginResponseDto refreshToken(HttpServletRequest request);
 }

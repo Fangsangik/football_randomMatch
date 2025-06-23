@@ -1,6 +1,11 @@
 package com.side.football_project.global.security.filter;
 
+import com.side.football_project.global.security.auth.AdminUserDetailsService;
+import com.side.football_project.global.security.auth.CustomUserDetailsService;
+import com.side.football_project.global.security.auth.VendorUserDetailsService;
+import com.side.football_project.global.security.jwt.BlackListToken;
 import com.side.football_project.global.security.jwt.JwtProvider;
+import com.side.football_project.global.util.UrlUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,23 +30,56 @@ import java.util.List;
 public class AuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    private final UserDetailsService userDetailsService;
-    private final List<String> WHITE_LIST = List.of( "/auth/**", "/api/home/**", "/api/chat",
-            "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/api/chat/**", "/kakao/callback");
+    private final CustomUserDetailsService customUserDetailsService;
+    private final VendorUserDetailsService vendorUserDetailsService;
+    private final AdminUserDetailsService adminUserDetailsService;
+    private final BlackListToken blackListToken;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
-        if (isWhiteListed(requestURI)){
+        String method = request.getMethod();
+        log.info("요청 URI: {}, Method: {}", requestURI, method);
+        
+        if (UrlUtil.isWhiteListed(requestURI, method)){
+            log.info("WHITE_LIST에 포함된 경로: {} [{}]", requestURI, method);
             filterChain.doFilter(request, response);
             return;
         }
 
+        log.info("인증이 필요한 경로: {}", requestURI);
         String token = getTokenFromRequest(request);
-        if (token == null || !jwtProvider.validateAccessToken(token)) {
-            log.error("유효하지 않은 토큰입니다.");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+        if (token == null) {
+            log.error("토큰이 없습니다. URI: {}", requestURI);
+            // HTML 페이지 요청인 경우 로그인 페이지로 리다이렉트
+            if (UrlUtil.isHtmlPageRequest(requestURI)) {
+                response.sendRedirect("/auth/login?redirect=" + requestURI);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰이 없습니다.");
+            }
+            return;
+        }
+        
+        if (!jwtProvider.validateAccessToken(token)) {
+            log.error("유효하지 않은 토큰입니다. URI: {}", requestURI);
+            // HTML 페이지 요청인 경우 로그인 페이지로 리다이렉트
+            if (UrlUtil.isHtmlPageRequest(requestURI)) {
+                response.sendRedirect("/auth/login?redirect=" + requestURI);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+            }
+            return;
+        }
+
+        if (blackListToken.isBlackListed(token)) {
+            log.error("블랙리스트에 등록된 토큰입니다. URI: {}", requestURI);
+            // HTML 페이지 요청인 경우 로그인 페이지로 리다이렉트
+            if (UrlUtil.isHtmlPageRequest(requestURI)) {
+                response.sendRedirect("/auth/login?redirect=" + requestURI);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "블랙리스트에 등록된 토큰입니다.");
+            }
             return;
         }
 
@@ -55,13 +93,55 @@ public class AuthFilter extends OncePerRequestFilter {
 
     private void authenticate(HttpServletRequest request, String token) {
         String email = jwtProvider.getUsername(token);
+        String requestURI = request.getRequestURI();
 
         try {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            setAuthentication(request, userDetails);
+            UserDetails userDetails = null;
+            
+            // 요청 URI에 따라 적절한 UserDetailsService 선택
+            if (UrlUtil.isAdminPath(requestURI)) {
+                userDetails = adminUserDetailsService.loadUserByUsername(email);
+            } else if (UrlUtil.isVendorPath(requestURI)) {
+                userDetails = vendorUserDetailsService.loadUserByUsername(email);
+            } else {
+                // 일반 사용자 또는 모든 서비스에서 차례로 시도
+                userDetails = loadUserFromAnyService(email);
+            }
+            
+            if (userDetails != null) {
+                setAuthentication(request, userDetails);
+            }
         } catch (UsernameNotFoundException e) {
-            log.error("사용자를 찾을 수 없습니다.");
+            log.error("사용자를 찾을 수 없습니다: {}", email);
         }
+    }
+    
+    /**
+     * 모든 UserDetailsService에서 사용자를 찾아보는 메서드
+     */
+    private UserDetails loadUserFromAnyService(String email) {
+        // 1. 일반 사용자부터 시도
+        try {
+            return customUserDetailsService.loadUserByUsername(email);
+        } catch (UsernameNotFoundException e) {
+            log.debug("일반 사용자에서 찾을 수 없음: {}", email);
+        }
+        
+        // 2. Vendor 시도
+        try {
+            return vendorUserDetailsService.loadUserByUsername(email);
+        } catch (UsernameNotFoundException e) {
+            log.debug("Vendor에서 찾을 수 없음: {}", email);
+        }
+        
+        // 3. Admin 시도
+        try {
+            return adminUserDetailsService.loadUserByUsername(email);
+        } catch (UsernameNotFoundException e) {
+            log.debug("Admin에서 찾을 수 없음: {}", email);
+        }
+        
+        throw new UsernameNotFoundException("어떤 서비스에서도 사용자를 찾을 수 없습니다: " + email);
     }
 
     private void setAuthentication(HttpServletRequest request, UserDetails userDetails) {
@@ -81,7 +161,4 @@ public class AuthFilter extends OncePerRequestFilter {
         return null;
     }
 
-    private boolean isWhiteListed(String requestURI) {
-        return WHITE_LIST.stream().anyMatch(uri -> uri.equals(requestURI) || requestURI.matches(uri.replace("**", ".*")));
-    }
 }

@@ -1,5 +1,6 @@
 package com.side.football_project.global.security.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.side.football_project.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,9 +28,10 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getName();
+        return user.getEmail();
     }
 
+    @JsonIgnore
     public User getUser() {
         return user;
     }

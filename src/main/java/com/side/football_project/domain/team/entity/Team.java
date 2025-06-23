@@ -1,21 +1,21 @@
 package com.side.football_project.domain.team.entity;
 
-import com.side.football_project.domain.match.domain.Match;
-import com.side.football_project.domain.reservation.domain.Reservation;
-import com.side.football_project.domain.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.side.football_project.domain.match.entity.Match;
+import com.side.football_project.domain.reservation.entity.Reservation;
 import com.side.football_project.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Entity
+@NoArgsConstructor
 @AllArgsConstructor
 public class Team extends BaseEntity {
     @Id
@@ -26,10 +26,13 @@ public class Team extends BaseEntity {
     private String teamName;
 
     private int headCount;
+    private int currentHeadCount;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> teamMembers = new ArrayList<>();
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "match_id")
     private Match match;
@@ -39,10 +42,13 @@ public class Team extends BaseEntity {
     private Reservation reservation;
 
     @Builder
-    public Team(String teamName, int headCount, List<TeamMember> teamMembers) {
+    public Team(String teamName, int headCount, int currentHeadCount, List<TeamMember> teamMembers, Match match, Reservation reservation) {
         this.teamName = teamName;
         this.headCount = headCount;
+        this.currentHeadCount = currentHeadCount;
         this.teamMembers = teamMembers;
+        this.match = match;
+        this.reservation = reservation;
     }
 
     /**
@@ -59,7 +65,28 @@ public class Team extends BaseEntity {
         }
     }
 
+    public void addCurrentHeadCount() {
+        this.currentHeadCount++;
+    }
+
+    public void addHeadCount() {
+        this.headCount++;
+    }
+
+    public void takeAwayCurrentHeadCount() {
+        if (this.currentHeadCount > 0) {
+            this.currentHeadCount--;
+        }
+    }
+
+    public void updateCurrentHeadCount(int count) {
+        this.currentHeadCount = count;
+    }
+
     public void addTeamMember(TeamMember member) {
+        if (this.teamMembers == null) {
+            this.teamMembers = new ArrayList<>();
+        }
         this.teamMembers.add(member);
         member.addTeam(this);
     }

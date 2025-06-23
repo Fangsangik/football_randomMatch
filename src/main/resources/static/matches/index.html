@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>매치 목록 - Football Project</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+        }
+
+        .nav-links a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-title p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn.secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn.secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn.success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .btn.success:hover {
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+        }
+
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .match-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .match-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-open {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-full {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-closed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .match-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            padding-right: 80px;
+        }
+
+        .match-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .meta-item i {
+            width: 20px;
+            color: #667eea;
+        }
+
+        .participant-info {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .participant-count {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .participant-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .match-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .auth-required {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            color: white;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .nav-links {
+                justify-content: center;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .match-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .page-title h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="nav">
+            <a href="/" class="logo">
+                <i class="fas fa-futbol"></i>
+                Football Project
+            </a>
+            <div class="nav-links">
+                <a href="/"><i class="fas fa-home"></i> 홈</a>
+                <a href="/teams"><i class="fas fa-users"></i> 팀</a>
+                <a href="/shorts/feed"><i class="fas fa-video"></i> 숏츠</a>
+                <div id="authStatus"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-title">
+            <h1><i class="fas fa-trophy"></i> 매치 관리</h1>
+            <p>새로운 매치를 만들거나 기존 매치에 참가해보세요!</p>
+        </div>
+
+        <div class="alert success" id="successAlert"></div>
+        <div class="alert error" id="errorAlert"></div>
+
+        <div class="content-grid">
+            <div class="card">
+                <h3><i class="fas fa-plus-circle"></i> 새 매치 만들기</h3>
+                <div id="createMatchSection">
+                    <form id="createMatchForm">
+                        <div class="form-group">
+                            <label for="matchName">매치 이름 *</label>
+                            <input type="text" id="matchName" name="matchName" required placeholder="친선 축구 매치">
+                        </div>
+                        <div class="form-group">
+                            <label for="matchDate">경기 일시 *</label>
+                            <input type="datetime-local" id="matchDate" name="matchDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="stadiumId">경기장 선택 *</label>
+                            <select id="stadiumId" name="stadiumId" required>
+                                <option value="">경기장을 선택하세요</option>
+                                <option value="1">서울월드컵경기장</option>
+                                <option value="2">잠실종합운동장</option>
+                                <option value="3">상암DMC 풋살장</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reservationId">예약 정보 (선택사항)</label>
+                            <select id="reservationId" name="reservationId">
+                                <option value="">예약을 선택하세요</option>
+                                <option value="1">2024-01-15 14:00 예약</option>
+                                <option value="2">2024-01-20 16:00 예약</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="matchUsers">참가자 이메일 (선택사항)</label>
+                            <textarea id="matchUsers" name="matchUsers" placeholder="참가자 이메일을 쉼표로 구분하여 입력하세요 (예: user1@email.com, user2@email.com)" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn">
+                            <i class="fas fa-plus"></i> 매치 생성
+                        </button>
+                    </form>
+                </div>
+                <div id="loginRequired" class="auth-required" style="display: none;">
+                    <i class="fas fa-lock"></i>
+                    <h4>로그인이 필요합니다</h4>
+                    <p>매치를 생성하려면 먼저 로그인해주세요.</p>
+                    <a href="/auth/login" class="btn" style="margin-top: 15px;">
+                        <i class="fas fa-sign-in-alt"></i> 로그인하기
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3><i class="fas fa-chart-bar"></i> 매치 현황</h3>
+                    <button class="btn secondary" onclick="loadMatches()">
+                        <i class="fas fa-sync"></i> 새로고침
+                    </button>
+                </div>
+                <div id="matchStats">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;" id="totalMatches">0</div>
+                            <div style="font-size: 0.9rem; color: #666;">전체 매치</div>
+                        </div>
+                        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #27ae60;" id="openMatches">0</div>
+                            <div style="font-size: 0.9rem; color: #666;">참가 가능</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-trophy"></i> 매치 목록</h3>
+            <div id="matchList" class="loading">
+                <i class="fas fa-spinner"></i>
+                <h4>매치 목록을 불러오는 중...</h4>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        
+        // 페이지 로드시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            updateAuthStatus();
+            loadMatches();
+            setMinDateTime();
+        });
+
+        // 인증 상태 확인
+        function checkAuthStatus() {
+            if (!token) {
+                document.getElementById('createMatchSection').style.display = 'none';
+                document.getElementById('loginRequired').style.display = 'block';
+            }
+        }
+
+        // 최소 날짜/시간 설정 (현재 시간 이후로만)
+        function setMinDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            document.getElementById('matchDate').min = minDateTime;
+        }
+
+        // 알림 표시
+        function showAlert(message, type = 'success') {
+            const successAlert = document.getElementById('successAlert');
+            const errorAlert = document.getElementById('errorAlert');
+            
+            successAlert.style.display = 'none';
+            errorAlert.style.display = 'none';
+            
+            if (type === 'success') {
+                successAlert.textContent = message;
+                successAlert.style.display = 'block';
+                setTimeout(() => successAlert.style.display = 'none', 5000);
+            } else {
+                errorAlert.textContent = message;
+                errorAlert.style.display = 'block';
+                setTimeout(() => errorAlert.style.display = 'none', 5000);
+            }
+            
+            // 상단으로 스크롤
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 매치 생성
+        document.getElementById('createMatchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentToken = localStorage.getItem('accessToken');
+            if (!currentToken) {
+                showAlert('로그인이 필요합니다.', 'error');
+                return;
+            }
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 생성 중...';
+            
+            const matchUsers = document.getElementById('matchUsers').value;
+            const matchUserEmails = matchUsers ? matchUsers.split(',').map(email => email.trim()).filter(email => email) : [];
+            
+            const formData = {
+                matchName: document.getElementById('matchName').value,
+                matchDate: document.getElementById('matchDate').value,
+                stadiumId: parseInt(document.getElementById('stadiumId').value) || null,
+                reservationId: parseInt(document.getElementById('reservationId').value) || null,
+                matchUsers: matchUserEmails
+            };
+            
+            fetch('/matches', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + currentToken
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('매치 생성에 실패했습니다.');
+                }
+                return response.json();
+            })
+            .then(result => {
+                showAlert('매치가 성공적으로 생성되었습니다!', 'success');
+                document.getElementById('createMatchForm').reset();
+                setMinDateTime();
+                loadMatches();
+            })
+            .catch(error => {
+                showAlert(error.message || '매치 생성 중 오류가 발생했습니다.', 'error');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            });
+        });
+
+        // 매치 목록 로드
+        function loadMatches() {
+            const token = localStorage.getItem('accessToken');
+            
+            // 토큰이 없으면 로그인 안내 표시
+            if (!token) {
+                const matchListEl = document.getElementById('matchList');
+                matchListEl.innerHTML = `
+                    <div class="auth-required">
+                        <i class="fas fa-lock"></i>
+                        <h3>로그인이 필요합니다</h3>
+                        <p>매치 관리 기능을 사용하려면 로그인해주세요.</p>
+                        <a href="/auth/login?redirect=/matches" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> 로그인하기
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            const matchListEl = document.getElementById('matchList');
+            matchListEl.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <h4>매치 목록을 불러오는 중...</h4>
+                </div>
+            `;
+            fetch('/matches/list', {
+                headers: token ? {
+                    'Authorization': 'Bearer ' + token
+                } : {}
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('매치 목록을 불러올 수 없습니다.');
+                }
+                return response.json();
+            })
+            .then(matches => {
+                updateMatchStats(matches);
+                displayMatches(matches);
+            })
+            .catch(error => {
+                matchListEl.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>오류가 발생했습니다</h3>
+                        <p>${error.message}</p>
+                        <button class="btn" onclick="loadMatches()" style="margin-top: 15px;">
+                            <i class="fas fa-redo"></i> 다시 시도
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // 매치 통계 업데이트
+        function updateMatchStats(matches) {
+            const totalMatches = matches.length;
+            const openMatches = matches.filter(match => {
+                const now = new Date();
+                const matchDate = new Date(match.dateTime);
+                return matchDate > now && (match.currentParticipants || 0) < match.maxParticipants;
+            }).length;
+            
+            document.getElementById('totalMatches').textContent = totalMatches;
+            document.getElementById('openMatches').textContent = openMatches;
+        }
+
+        // 매치 목록 표시
+        function displayMatches(matches) {
+            const matchListEl = document.getElementById('matchList');
+            
+            if (matches.length === 0) {
+                matchListEl.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-trophy"></i>
+                        <h3>등록된 매치가 없습니다</h3>
+                        <p>첫 번째 매치를 만들어보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const matchGrid = document.createElement('div');
+            matchGrid.className = 'match-grid';
+            
+            matches.forEach(match => {
+                const now = new Date();
+                const matchDate = new Date(match.dateTime);
+                const currentParticipants = match.currentParticipants || 0;
+                const maxParticipants = match.maxParticipants;
+                
+                let status = 'open';
+                let statusText = '참가 가능';
+                
+                if (matchDate <= now) {
+                    status = 'closed';
+                    statusText = '종료됨';
+                } else if (currentParticipants >= maxParticipants) {
+                    status = 'full';
+                    statusText = '마감됨';
+                }
+                
+                const matchCard = document.createElement('div');
+                matchCard.className = 'match-card';
+                matchCard.innerHTML = `
+                    <div class="match-status status-${status}">${statusText}</div>
+                    <div class="match-title">${match.title}</div>
+                    <div class="match-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${formatDateTime(match.dateTime)}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${match.location}</span>
+                        </div>
+                        ${match.creator ? `
+                        <div class="meta-item">
+                            <i class="fas fa-user"></i>
+                            <span>주최: ${match.creator}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="participant-info">
+                        <div class="participant-count">${currentParticipants}/${maxParticipants}</div>
+                        <div class="participant-label">참가자</div>
+                    </div>
+                    <div class="match-actions">
+                        ${token && status === 'open' ? `
+                        <button class="btn success" onclick="joinMatch(${match.id})">
+                            <i class="fas fa-plus"></i> 참가하기
+                        </button>
+                        ` : status === 'open' ? `
+                        <button class="btn secondary" onclick="alert('로그인이 필요합니다.')">
+                            <i class="fas fa-lock"></i> 로그인 필요
+                        </button>
+                        ` : ''}
+                        <button class="btn secondary" onclick="viewMatch(${match.id})">
+                            <i class="fas fa-eye"></i> 상세보기
+                        </button>
+                    </div>
+                `;
+                matchGrid.appendChild(matchCard);
+            });
+            
+            matchListEl.innerHTML = '';
+            matchListEl.appendChild(matchGrid);
+        }
+
+        // 매치 참가
+        function joinMatch(matchId) {
+            if (!token) {
+                showAlert('로그인이 필요합니다.', 'error');
+                return;
+            }
+            
+            if (!confirm('이 매치에 참가하시겠습니까?')) {
+                return;
+            }
+            
+            fetch(`/matches/${matchId}/join`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('매치 참가에 실패했습니다.');
+                }
+                return response.text();
+            })
+            .then(message => {
+                showAlert('매치에 성공적으로 참가되었습니다!', 'success');
+                loadMatches();
+            })
+            .catch(error => {
+                showAlert(error.message || '매치 참가 중 오류가 발생했습니다.', 'error');
+            });
+        }
+
+        // 매치 상세보기
+        function viewMatch(matchId) {
+            // TODO: 매치 상세 페이지 구현
+            alert('매치 상세보기 기능은 준비중입니다.');
+        }
+
+        // 날짜/시간 포맷팅
+        function formatDateTime(dateTimeString) {
+            if (!dateTimeString) return '';
+            const date = new Date(dateTimeString);
+            return date.toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // 인증 상태 업데이트
+        function updateAuthStatus() {
+            const authStatusEl = document.getElementById('authStatus');
+            const currentToken = localStorage.getItem('accessToken');
+            const adminToken = localStorage.getItem('adminToken');
+            const vendorToken = localStorage.getItem('vendorToken');
+            
+            if (currentToken || adminToken || vendorToken) {
+                let userType = '';
+                if (adminToken) userType = '관리자';
+                else if (vendorToken) userType = '업체';
+                else userType = '사용자';
+                
+                authStatusEl.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="color: #27ae60; font-size: 0.9rem;">
+                            <i class="fas fa-check-circle"></i> ${userType}
+                        </span>
+                        <button onclick="logout()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                            <i class="fas fa-sign-out-alt"></i> 로그아웃
+                        </button>
+                    </div>
+                `;
+            } else {
+                authStatusEl.innerHTML = `
+                    <a href="/auth/login" style="color: #333; text-decoration: none; font-weight: 500; padding: 8px 16px;">
+                        <i class="fas fa-sign-in-alt"></i> 로그인
+                    </a>
+                `;
+            }
+        }
+        
+        // 로그아웃 함수
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('vendorToken');
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

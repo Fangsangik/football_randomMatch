@@ -12,4 +12,5 @@ public interface MatchUserService {
     void completeMatch(Long matchId, User user);
     void submitMatchRatings(Long matchId, User user, List<MatchRatingRequestDto> ratings);
     MatchResponseDto createMatch (MatchRequestDto requestDto, User user);
+    List<MatchResponseDto> getAllMatches();
 }

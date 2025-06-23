@@ -1,5 +1,7 @@
 package com.side.football_project.domain.stadium.service;
 
+import com.side.football_project.domain.address.dto.LatLngDto;
+import com.side.football_project.domain.address.service.KakaoMapServiceImpl;
 import com.side.football_project.domain.stadium.dto.StadiumRequestDto;
 import com.side.football_project.domain.stadium.dto.StadiumResponseDto;
 import com.side.football_project.domain.stadium.dto.StadiumUpdateDto;
@@ -10,71 +12,28 @@ import com.side.football_project.domain.stadium.repository.StadiumRepository;
 import com.side.football_project.domain.user.entity.User;
 import com.side.football_project.domain.user.service.UserService;
 import com.side.football_project.domain.user.type.UserRole;
+import com.side.football_project.domain.vendor.dto.VendorResponseDto;
+import com.side.football_project.domain.vendor.entity.Vendor;
+import com.side.football_project.domain.vendor.service.VendorService;
 import com.side.football_project.global.common.exception.CustomException;
 import com.side.football_project.global.common.exception.type.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class StadiumServiceImpl implements StadiumService {
 
     private final StadiumRepository stadiumRepository;
-    private final UserService userService;
 
+    @Override
     @Transactional
-    @Override
-    public StadiumResponseDto createStadium(StadiumRequestDto requestDto, User user) {
-        User findUser = userService.findUserById(user.getId());
-        validateUserRole(findUser);
-
-        Stadium stadium = Stadium.builder()
-                .name(requestDto.getName())
-                .status(StadiumStatus.AVAILABLE)
-                .description(requestDto.getDescription())
-                .capacity(requestDto.getCapacity())
-                .user(findUser)
-                .build();
-
-        stadium.applyAddress(new Address(requestDto.getCity(), requestDto.getState(), requestDto.getPostalCode(), requestDto.getSpecificAddress()));
-
-        stadiumRepository.save(stadium);
-        return StadiumResponseDto.toEntity(stadium);
-    }
-
-    @Override
     public StadiumResponseDto findStadium(Long id) {
         Stadium stadium = stadiumRepository.findByIdOrElseThrow(id);
         return StadiumResponseDto.toEntity(stadium);
-    }
-
-    @Override
-    public StadiumUpdateDto updateStadium(StadiumUpdateDto requestDto, User user) {
-        User findUser = userService.findUserById(user.getId());
-        Stadium stadium = stadiumRepository.findByIdOrElseThrow(requestDto.getId());
-
-        validateUserRole(findUser);
-
-        stadium = Stadium.builder()
-                .name(requestDto.getName())
-                .status(StadiumStatus.AVAILABLE)
-                .description(requestDto.getDescription())
-                .capacity(requestDto.getCapacity())
-                .user(findUser)
-                .build();
-
-        stadium.applyAddress(new Address(requestDto.getCity(), requestDto.getState(), requestDto.getPostalCode(), requestDto.getSpecificAddress()));
-
-
-        return StadiumUpdateDto.toEntity(stadium);
-    }
-
-    @Override
-    public void deleteStadium(Long id, User user) {
-        validateUserRole(user);
-        Stadium stadium = stadiumRepository.findByIdOrElseThrow(id);
-        stadiumRepository.deleteById(stadium.getId());
     }
 
     @Override
@@ -87,9 +46,26 @@ public class StadiumServiceImpl implements StadiumService {
         return stadiumRepository.findByIdOrElseThrow(id);
     }
 
-    private static void validateUserRole(User findUser) {
-        if (UserRole.VENDOR.equals(findUser.getRole())) {
-            throw new CustomException(UserErrorCode.NOT_ALLOWED);
-        }
+
+    @Override
+    public List<StadiumResponseDto> searchStadiums(String region, String keyword, int page, int size) {
+        List<Stadium> stadiums = stadiumRepository.searchStadiums(region, keyword, page, size);
+        return stadiums.stream()
+                .map(StadiumResponseDto::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<StadiumResponseDto> findNearbyStadiums(Double latitude, Double longitude, Double radiusKm, int page, int size) {
+        List<Stadium> stadiums = stadiumRepository.findNearbyStadiums(latitude, longitude, radiusKm, page, size);
+        return stadiums.stream()
+                .map(StadiumResponseDto::toDto)
+                .toList();
+    }
+
+    @Override
+    public StadiumResponseDto findById(Long stadiumId) {
+        Stadium stadium = stadiumRepository.findByIdOrElseThrow(stadiumId);
+        return StadiumResponseDto.toDto(stadium);
     }
 }

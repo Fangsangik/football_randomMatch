@@ -5,8 +5,10 @@ import com.side.football_project.domain.stadium.entity.StadiumStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class StadiumUpdateDto {
     private Long id;

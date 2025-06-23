@@ -1,10 +1,9 @@
 package com.side.football_project.domain.match.repository;
 
 
-import com.side.football_project.domain.match.domain.MatchUser;
+import com.side.football_project.domain.match.entity.MatchUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
-import java.util.Optional;
 
 public interface MatchUserRepository extends JpaRepository<MatchUser, Long> {
 
