@@ -300,6 +300,155 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* 신청 상황 스타일 */
+        .status-container {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge.pending {
+            background: linear-gradient(45deg, #ffeaa7, #fdcb6e);
+            color: #d63031;
+            box-shadow: 0 4px 15px rgba(253, 203, 110, 0.3);
+        }
+
+        .status-badge.approved {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        .status-badge.rejected {
+            background: linear-gradient(45deg, #e17055, #d63031);
+            color: white;
+            box-shadow: 0 4px 15px rgba(225, 112, 85, 0.3);
+        }
+
+        .status-message {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .status-detail {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #dee2e6;
+        }
+
+        .status-detail.rejected {
+            border-left-color: #e17055;
+            background: #ffeaa7;
+        }
+
+        .status-detail.approved {
+            border-left-color: #00b894;
+            background: #d1f2eb;
+        }
+
+        .status-detail.pending {
+            border-left-color: #fdcb6e;
+            background: #fff3cd;
+        }
+
+        .status-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .status-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* 준비 중 모달 스타일 */
+        .coming-soon-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .coming-soon-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .coming-soon-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #f39c12;
+        }
+
+        .coming-soon-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .coming-soon-message {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .coming-soon-btn {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .coming-soon-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(243, 156, 18, 0.3);
+        }
+
         /* 모달 스타일 */
         .modal {
             display: none;
@@ -485,7 +634,7 @@
                         <span class="stat-value" id="availableStadiums">-</span>
                     </div>
                     <div class="stats-row">
-                        <span class="stat-label">점검 중</span>
+                        <span class="stat-label">이용 불가</span>
                         <span class="stat-value" id="maintenanceStadiums">-</span>
                     </div>
                 </div>
@@ -566,6 +715,35 @@
                 </div>
             </div>
             
+            <!-- 신청 상황 카드 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon profile">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">신청 상황</div>
+                        <div class="card-subtitle">업체 승인 현황</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="status-container" id="statusContainer">
+                        <div class="status-badge" id="statusBadge">
+                            <i class="fas fa-clock"></i>
+                            <span id="statusText">확인 중...</span>
+                        </div>
+                        <div class="status-message" id="statusMessage">
+                            신청 상황을 확인하고 있습니다...
+                        </div>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="refreshApplyStatus()">
+                        <i class="fas fa-sync-alt"></i> 상태 새로고침
+                    </button>
+                </div>
+            </div>
+
             <!-- 업체 정보 카드 -->
             <div class="dashboard-card">
                 <div class="card-header">
@@ -636,6 +814,7 @@
             }
             
             loadDashboardData();
+            loadApplyStatus();
         });
         
         // 대시보드 데이터 로드
@@ -658,7 +837,7 @@
                 updateVendorInfo(vendorData);
                 
                 // 경기장 데이터 로드
-                const stadiumResponse = await fetch('/vendor/my-stadiums', {
+                const stadiumResponse = await fetch('/api/vendor/stadiums/my-stadiums', {
                     headers: {
                         'Authorization': `Bearer ${vendorToken}`
                     }
@@ -666,7 +845,9 @@
                 
                 if (stadiumResponse.ok) {
                     const stadiumData = await stadiumResponse.json();
-                    updateStadiumStats(stadiumData);
+                    // API는 ResponseEntity<StadiumResponseDto>의 배열을 반환하므로 데이터 추출 필요
+                    const stadiums = stadiumData.map(response => response.body || response);
+                    updateStadiumStats(stadiums);
                 }
                 
                 // 예약 통계 로드
@@ -710,11 +891,11 @@
         function updateStadiumStats(stadiums) {
             const totalStadiums = stadiums.length;
             const availableStadiums = stadiums.filter(s => s.status === 'AVAILABLE').length;
-            const maintenanceStadiums = stadiums.filter(s => s.status === 'MAINTENANCE').length;
+            const notPossibleStadiums = stadiums.filter(s => s.status === 'NOT_POSSIBLE').length;
             
             document.getElementById('totalStadiums').textContent = totalStadiums;
             document.getElementById('availableStadiums').textContent = availableStadiums;
-            document.getElementById('maintenanceStadiums').textContent = maintenanceStadiums;
+            document.getElementById('maintenanceStadiums').textContent = notPossibleStadiums;
         }
         
         // 예약 통계 업데이트
@@ -758,6 +939,23 @@
             }, 5000);
         }
         
+        // 준비 중 알림 함수
+        function showComingSoon(featureName) {
+            const modal = document.getElementById('comingSoonModal');
+            const title = document.getElementById('comingSoonTitle');
+            const message = document.getElementById('comingSoonMessage');
+            
+            title.textContent = `${featureName} 기능`;
+            message.innerHTML = `<strong>${featureName}</strong> 기능은 현재 개발 중입니다.<br><br>더 나은 서비스를 제공하기 위해 열심히 준비하고 있으니<br>조금만 기다려 주세요! 🙏`;
+            
+            modal.style.display = 'flex';
+        }
+
+        // 준비 중 모달 닫기
+        function closeComingSoonModal() {
+            document.getElementById('comingSoonModal').style.display = 'none';
+        }
+
         // 네비게이션 함수들
         function goToStadiumManagement() {
             window.location.href = '/vendor/stadium-management.html';
@@ -772,11 +970,11 @@
         }
         
         function viewReservationHistory() {
-            window.location.href = '/vendor/reservation-history.html';
+            showComingSoon('예약 내역 상세보기');
         }
         
         function viewDetailedStats() {
-            window.location.href = '/vendor/statistics.html';
+            showComingSoon('고급 통계 및 분석');
         }
         
         function editVendorInfo() {
@@ -847,13 +1045,137 @@
         
         // 모달 외부 클릭 시 닫기
         window.onclick = function(event) {
-            const modal = document.getElementById('editModal');
-            if (event.target === modal) {
+            const editModal = document.getElementById('editModal');
+            const comingSoonModal = document.getElementById('comingSoonModal');
+            
+            if (event.target === editModal) {
                 closeEditModal();
+            }
+            
+            if (event.target === comingSoonModal) {
+                closeComingSoonModal();
             }
         }
 
         // 로그아웃
+        // 신청 상황 조회
+        async function loadApplyStatus() {
+            try {
+                const vendorToken = localStorage.getItem('vendorToken');
+                
+                const response = await fetch('/vendor/my-apply-status', {
+                    headers: {
+                        'Authorization': `Bearer ${vendorToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('신청 상황을 불러올 수 없습니다.');
+                }
+                
+                const statusData = await response.json();
+                updateApplyStatus(statusData);
+                
+            } catch (error) {
+                console.error('신청 상황 로드 실패:', error);
+                showStatusError();
+            }
+        }
+
+        // 신청 상황 UI 업데이트
+        function updateApplyStatus(statusData) {
+            const status = statusData.vendorStatus;
+            const statusBadge = document.getElementById('statusBadge');
+            const statusText = document.getElementById('statusText');
+            const statusMessage = document.getElementById('statusMessage');
+            const statusContainer = document.getElementById('statusContainer');
+
+            // 기존 클래스 제거
+            statusBadge.className = 'status-badge';
+            
+            // 상태별 UI 업데이트
+            switch (status) {
+                case 'PENDING':
+                    statusBadge.classList.add('pending');
+                    statusBadge.innerHTML = '<i class="fas fa-clock"></i><span>승인 대기 중</span>';
+                    statusMessage.innerHTML = '관리자의 승인을 기다리고 있습니다.<br>승인까지 1-3일 정도 소요될 수 있습니다.';
+                    
+                    // 상세 정보 추가
+                    const pendingDetail = document.createElement('div');
+                    pendingDetail.className = 'status-detail pending';
+                    pendingDetail.innerHTML = `
+                        <div class="status-title">📋 신청 검토 중</div>
+                        <div class="status-description">제출하신 업체 정보를 관리자가 검토하고 있습니다. 추가 서류가 필요한 경우 연락드리겠습니다.</div>
+                    `;
+                    statusContainer.appendChild(pendingDetail);
+                    break;
+                    
+                case 'APPROVED':
+                    statusBadge.classList.add('approved');
+                    statusBadge.innerHTML = '<i class="fas fa-check-circle"></i><span>승인 완료</span>';
+                    statusMessage.innerHTML = '축하합니다! 업체 승인이 완료되었습니다.<br>이제 모든 서비스를 이용하실 수 있습니다.';
+                    
+                    const approvedDetail = document.createElement('div');
+                    approvedDetail.className = 'status-detail approved';
+                    approvedDetail.innerHTML = `
+                        <div class="status-title">🎉 승인 완료</div>
+                        <div class="status-description">경기장 등록, 예약 관리 등 모든 기능을 사용하실 수 있습니다.</div>
+                    `;
+                    statusContainer.appendChild(approvedDetail);
+                    break;
+                    
+                case 'REJECTED':
+                    statusBadge.classList.add('rejected');
+                    statusBadge.innerHTML = '<i class="fas fa-times-circle"></i><span>승인 거절</span>';
+                    statusMessage.innerHTML = '신청이 거절되었습니다.<br>거절 사유를 확인하시고 다시 신청해 주세요.';
+                    
+                    const rejectedDetail = document.createElement('div');
+                    rejectedDetail.className = 'status-detail rejected';
+                    rejectedDetail.innerHTML = `
+                        <div class="status-title">❌ 승인 거절</div>
+                        <div class="status-description">거절 사유를 확인하시고 정보를 수정한 후 다시 신청해 주세요. 문의사항이 있으시면 고객센터로 연락바랍니다.</div>
+                    `;
+                    statusContainer.appendChild(rejectedDetail);
+                    break;
+                    
+                default:
+                    statusBadge.innerHTML = '<i class="fas fa-question-circle"></i><span>상태 확인 중</span>';
+                    statusMessage.innerHTML = '신청 상황을 확인하고 있습니다...';
+            }
+        }
+
+        // 상태 새로고침
+        async function refreshApplyStatus() {
+            const refreshBtn = document.querySelector('button[onclick="refreshApplyStatus()"]');
+            const originalText = refreshBtn.innerHTML;
+            
+            // 로딩 상태
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 새로고침 중...';
+            refreshBtn.disabled = true;
+            
+            try {
+                await loadApplyStatus();
+                showAlert('신청 상황이 업데이트되었습니다.', 'info');
+            } catch (error) {
+                showAlert('신청 상황 새로고침에 실패했습니다.', 'error');
+            } finally {
+                // 원래 상태로 복원
+                setTimeout(() => {
+                    refreshBtn.innerHTML = originalText;
+                    refreshBtn.disabled = false;
+                }, 1000);
+            }
+        }
+
+        // 상태 로드 오류 처리
+        function showStatusError() {
+            const statusBadge = document.getElementById('statusBadge');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            statusBadge.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>오류 발생</span>';
+            statusMessage.innerHTML = '신청 상황을 불러오는데 실패했습니다.<br>새로고침 버튼을 눌러 다시 시도해 주세요.';
+        }
+
         function logout() {
             if (confirm('로그아웃 하시겠습니까?')) {
                 localStorage.removeItem('vendorToken');
@@ -896,6 +1218,24 @@
                     <button type="button" class="modal-btn primary" onclick="submitVendorUpdate()">수정 완료</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- 준비 중 모달 -->
+    <div id="comingSoonModal" class="coming-soon-modal">
+        <div class="coming-soon-content">
+            <div class="coming-soon-icon">
+                🚧
+            </div>
+            <h3 class="coming-soon-title" id="comingSoonTitle">기능 준비 중</h3>
+            <p class="coming-soon-message" id="comingSoonMessage">
+                해당 기능은 현재 개발 중입니다.<br><br>
+                더 나은 서비스를 제공하기 위해 열심히 준비하고 있으니<br>
+                조금만 기다려 주세요! 🙏
+            </p>
+            <button class="coming-soon-btn" onclick="closeComingSoonModal()">
+                확인
+            </button>
         </div>
     </div>
 

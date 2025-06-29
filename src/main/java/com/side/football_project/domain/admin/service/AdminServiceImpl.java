@@ -5,16 +5,25 @@ import com.side.football_project.domain.admin.dto.*;
 import com.side.football_project.domain.admin.entity.Admin;
 import com.side.football_project.domain.admin.repository.AdminRepository;
 import com.side.football_project.domain.user.service.UserService;
+import com.side.football_project.domain.user.type.UserRole;
+import com.side.football_project.domain.vendor.dto.VendorResponseDto;
+import com.side.football_project.domain.vendor.entity.Vendor;
 import com.side.football_project.domain.vendor.repository.VendorRepository;
 import com.side.football_project.domain.vendor.service.VendorService;
+import com.side.football_project.domain.vendor.type.VendorStatus;
 import com.side.football_project.global.common.exception.CustomException;
 import com.side.football_project.global.common.exception.type.AdminErrorCode;
 import com.side.football_project.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -84,5 +93,67 @@ public class AdminServiceImpl implements AdminService {
                 .email(admin.getEmail())
                 .accessToken(accessToken)
                 .build();
+    }
+
+    // 벤더 관리 메서드들
+    @Transactional
+    @Override
+    public void approveVendor(Long vendorId, Admin admin) {
+        validateAdmin(admin);
+
+        Vendor vendor = vendorRepository.findById(vendorId)
+                .orElseThrow(() -> new RuntimeException("업체를 찾을 수 없습니다."));
+
+        vendor.approve();
+        vendorRepository.save(vendor);
+    }
+
+    @Transactional
+    @Override
+    public void rejectVendor(Long vendorId, String reason, Admin admin) {
+        validateAdmin(admin);
+
+        Vendor vendor = vendorRepository.findById(vendorId)
+                .orElseThrow(() -> new RuntimeException("업체를 찾을 수 없습니다."));
+
+        vendor.reject(reason);
+        vendorRepository.save(vendor);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<VendorResponseDto> getAllVendorApplications(Admin admin, int page, int size) {
+        validateAdmin(admin);
+
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+
+        return vendorRepository.findAll(pageable)
+                .map(VendorResponseDto::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<VendorResponseDto> getVendorsByStatus(VendorStatus status, Admin admin) {
+        validateAdmin(admin);
+        
+        return vendorRepository.findByStatusOrderByAppliedAtDesc(status).stream()
+                .map(VendorResponseDto::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<VendorResponseDto> getApprovedVendors(Admin admin) {
+        validateAdmin(admin);
+        
+        return vendorRepository.findByStatusOrderByAppliedAtDesc(VendorStatus.APPROVED).stream()
+                .map(VendorResponseDto::toDto)
+                .collect(Collectors.toList());
+    }
+
+    private void validateAdmin(Admin admin) {
+        if (UserRole.VENDOR.equals(admin.getRole())) {
+            throw new CustomException(AdminErrorCode.ADMIN_ACCESS_DENIED);
+        }
     }
 }

@@ -102,7 +102,7 @@ public class AdminAuthController {
     public ResponseEntity<Map<String, String>> approveVendor(@PathVariable Long vendorId,
                                                              @AuthenticationPrincipal UserDetails userDetails) {
         Admin admin = AdminDetailsUtil.getAdmin(userDetails);
-        vendorService.approveVendor(vendorId, admin);
+        adminService.approveVendor(vendorId, admin);
         return ResponseEntity.ok(Map.of("message", "업체가 승인되었습니다."));
     }
 
@@ -116,7 +116,7 @@ public class AdminAuthController {
                                                             @AuthenticationPrincipal UserDetails userDetails) {
         Admin admin = AdminDetailsUtil.getAdmin(userDetails);
         String reason = request.get("reason");
-        vendorService.rejectVendor(vendorId, reason, admin);
+        adminService.rejectVendor(vendorId, reason, admin);
         return ResponseEntity.ok(Map.of("message", "업체 신청이 거절되었습니다."));
     }
 
@@ -129,7 +129,18 @@ public class AdminAuthController {
                                                                             @RequestParam(defaultValue = "0") int page,
                                                                             @RequestParam(defaultValue = "10") int size) {
         Admin admin = AdminDetailsUtil.getAdmin(userDetails);
-        Page<VendorResponseDto> applications = vendorService.getAllVendorApplications(admin, page, size);
+        Page<VendorResponseDto> applications = adminService.getAllVendorApplications(admin, page, size);
         return ResponseEntity.ok(applications);
+    }
+
+    /**
+     * 승인된 업체 목록 조회
+     */
+    @GetMapping("/vendor/approved")
+    @ResponseBody
+    public ResponseEntity<List<VendorResponseDto>> getApprovedVendors(@AuthenticationPrincipal UserDetails userDetails) {
+        Admin admin = AdminDetailsUtil.getAdmin(userDetails);
+        List<VendorResponseDto> vendors = adminService.getApprovedVendors(admin);
+        return ResponseEntity.ok(vendors);
     }
 }

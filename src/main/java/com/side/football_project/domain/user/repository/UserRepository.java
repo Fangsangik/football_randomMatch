@@ -6,7 +6,7 @@ import com.side.football_project.global.common.exception.type.UserErrorCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import javax.swing.text.html.Option;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -26,4 +26,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
     }
 
+    List<User> findByTier(String tier);
 }

@@ -1,10 +1,7 @@
 package com.side.football_project.domain.vendor.controller;
 
 import com.side.football_project.domain.stadium.dto.StadiumResponseDto;
-import com.side.football_project.domain.vendor.dto.UpdateVendorRequestDto;
-import com.side.football_project.domain.vendor.dto.UpdateVendorResponseDto;
-import com.side.football_project.domain.vendor.dto.VendorRequestDto;
-import com.side.football_project.domain.vendor.dto.VendorResponseDto;
+import com.side.football_project.domain.vendor.dto.*;
 import com.side.football_project.domain.vendor.entity.Vendor;
 import com.side.football_project.domain.vendor.service.VendorService;
 import com.side.football_project.domain.vendor.type.VendorStatus;
@@ -84,20 +81,19 @@ public class VendorController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 승인된 업체 목록 조회
-     */
-    @GetMapping("/approved")
-    @ResponseBody
-    public ResponseEntity<List<VendorResponseDto>> getApprovedVendors() {
-        List<VendorResponseDto> vendors = vendorService.getVendorsByStatus(VendorStatus.APPROVED);
-        return ResponseEntity.ok(vendors);
-    }
 
     @GetMapping("/{vendorId:[0-9]+}")
     @ResponseBody
     public ResponseEntity<VendorResponseDto> getVendorById(@PathVariable Long stadiumId) {
         VendorResponseDto vendor = vendorService.getVendorById(stadiumId);
         return ResponseEntity.ok(vendor);
+    }
+
+    @GetMapping("/my-apply-status")
+    @ResponseBody
+    public ResponseEntity<GetMyApplyStatusDto> getMyApplyStatus(@AuthenticationPrincipal UserDetails userDetails) {
+        Vendor vendor = VendorDetailsUtil.getVendor(userDetails);
+        GetMyApplyStatusDto myApplyStatus = vendorService.getMyApplyStatus(vendor);
+        return ResponseEntity.ok(myApplyStatus);
     }
 }

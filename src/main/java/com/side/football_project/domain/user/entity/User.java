@@ -42,6 +42,9 @@ public class User extends BaseEntity {
     @Column(length = 100)
     private String email;
 
+    private double latitude;
+    private double longitude;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MatchUser> matchUsers = new ArrayList<>();
@@ -56,14 +59,18 @@ public class User extends BaseEntity {
     protected User() {}
 
     @Builder
-    public User(String name, String phoneNumber, int age, UserRole role, String password, String email) {
+    public User(String name, String phoneNumber, int age, UserTier tier, UserRole role, String password, String email, double latitude, double longitude, List<MatchUser> matchUsers, List<Shorts> shortsList) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.age = age;
-        this.tier = UserTier.ROOKIE;
+        this.tier = tier;
         this.role = role;
         this.password = password;
         this.email = email;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.matchUsers = matchUsers;
+        this.shortsList = shortsList;
     }
 
     /**
