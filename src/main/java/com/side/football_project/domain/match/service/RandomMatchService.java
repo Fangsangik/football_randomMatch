@@ -1,9 +1,11 @@
 package com.side.football_project.domain.match.service;
 
+import com.side.football_project.domain.notification.service.MatchNotificationService;
 import com.side.football_project.domain.reservation.entity.Reservation;
 import com.side.football_project.domain.reservation.dto.ReservationRequestDto;
 import com.side.football_project.domain.reservation.repository.ReservationRepository;
 import com.side.football_project.domain.reservation.service.UserReservationService;
+import com.side.football_project.domain.stadium.dto.StadiumResponseDto;
 import com.side.football_project.domain.stadium.entity.Stadium;
 import com.side.football_project.domain.stadium.service.StadiumService;
 import com.side.football_project.domain.user.entity.User;
@@ -29,6 +31,7 @@ public class RandomMatchService implements RandomService {
     private final ReservationRepository reservationRepository;
     private final UserService userService;
     private final StadiumService stadiumService;
+    private final MatchNotificationService matchNotificationService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
@@ -53,7 +56,12 @@ public class RandomMatchService implements RandomService {
             User user = findRandomUserByTier(avgTier);
 
             if (user == null) {
-                log.info("매칭 가능한 사용자가 없습니다.");
+                log.info("매칭 가능한 사용자가 없습니다. 구독자들에게 알림을 전송합니다.");
+
+                // 빈 자리 알림 전송
+                int availableSpots = capacity - current;
+                StadiumResponseDto stadiumDto = StadiumResponseDto.toEntity(stadium);
+                matchNotificationService.notifyAvailableMatch(stadiumDto, avgTier, availableSpots);
                 break;
             }
 
@@ -66,6 +74,9 @@ public class RandomMatchService implements RandomService {
             reservationService.createReservation(requestDto, user);
             current++;
             log.info("사용자 [{}]가 경기장 [{}]에 매칭되었습니다.", user.getId(), stadium.getId());
+            
+            // 매칭 완료 SMS 알림 전송
+            sendMatchNotificationToUser(user, stadium);
         }
     }
 
@@ -107,6 +118,28 @@ public class RandomMatchService implements RandomService {
         }
 
         return null;
+    }
+
+    /**
+     * 매칭이 완료된 사용자에게 SMS 알림을 전송합니다.
+     * @param user 매칭된 사용자
+     * @param stadium 매칭된 경기장
+     */
+    private void sendMatchNotificationToUser(User user, Stadium stadium) {
+        String message = String.format(
+                "[축구매치] %s님이 %s 경기장 매칭이 완료되었습니다! 경기를 즐기세요. ⚽",
+                user.getName(),
+                stadium.getName()
+        );
+        
+        try {
+            StadiumResponseDto stadiumDto = StadiumResponseDto.toEntity(stadium);
+            matchNotificationService.sendNotificationToSubscribers(stadiumDto, user.getTier(), message);
+            log.info("매칭 완료 알림 전송: User {}, Stadium {}", user.getId(), stadium.getId());
+        } catch (Exception e) {
+            log.error("매칭 완료 알림 전송 실패: User {}, Stadium {}, Error: {}", 
+                     user.getId(), stadium.getId(), e.getMessage());
+        }
     }
 
     private UserTier averageTier(Long stadiumId) {

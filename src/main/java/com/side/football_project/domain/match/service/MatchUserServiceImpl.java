@@ -5,6 +5,8 @@ import com.side.football_project.domain.match.entity.MatchUser;
 import com.side.football_project.domain.match.dto.*;
 import com.side.football_project.domain.match.repository.MatchRepository;
 import com.side.football_project.domain.match.repository.MatchUserRepository;
+import com.side.football_project.domain.stadium.dto.StadiumResponseDto;
+import com.side.football_project.domain.stadium.service.StadiumService;
 import com.side.football_project.domain.team.entity.Team;
 import com.side.football_project.domain.team.service.TeamService;
 import com.side.football_project.domain.user.entity.User;
@@ -12,6 +14,7 @@ import com.side.football_project.domain.user.service.UserService;
 import com.side.football_project.domain.user.type.UserRole;
 import com.side.football_project.global.common.exception.CustomException;
 import com.side.football_project.global.common.exception.type.MatchErrorCode;
+import com.side.football_project.global.common.exception.type.StadiumErrorCode;
 import com.side.football_project.global.common.exception.type.UserErrorCode;
 
 import com.side.football_project.domain.reservation.dto.ReservationResponseDto;
@@ -31,6 +34,7 @@ public class MatchUserServiceImpl implements MatchUserService {
     private final UserService userService;
     private final UserReservationService reservationService;
     private final TeamService teamService;
+    private final StadiumService stadiumService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
@@ -38,6 +42,11 @@ public class MatchUserServiceImpl implements MatchUserService {
     public MatchResponseDto createMatch (MatchRequestDto requestDto, User user) {
 
         validateUserRole(user);
+
+        StadiumResponseDto stadium = stadiumService.findStadium(requestDto.getStadiumId());
+        if (stadium == null) {
+            throw new CustomException(StadiumErrorCode.STADIUM_NOT_FOUND);
+        }
 
         ReservationResponseDto reservation = reservationService.findReservation(requestDto.getReservationId(), user);
 
