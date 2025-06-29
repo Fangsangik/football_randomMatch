@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -83,6 +84,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT COUNT(r) FROM Reservation r WHERE r.stadium.vendor = :vendor AND r.status = :status")
     Long countByStadiumVendorAndStatus(@Param("vendor") Vendor vendor, @Param("status") ReservationStatus status);
+    
+    // 통계 기능을 위한 추가 쿼리
+    @Query("SELECT COUNT(r) FROM Reservation r WHERE r.stadium.id = :stadiumId AND r.createdAt >= :afterDate")
+    Long countByStadiumIdAndCreatedAtAfter(@Param("stadiumId") Long stadiumId, @Param("afterDate") LocalDateTime afterDate);
 
     // 예약 ID로 조회 (에러 처리 포함)
     default Reservation findReservationByIdOrElseThrow(Long id) {

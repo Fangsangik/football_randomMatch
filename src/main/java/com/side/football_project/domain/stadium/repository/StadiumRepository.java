@@ -70,4 +70,10 @@ public interface StadiumRepository extends JpaRepository<Stadium, Long> {
         
         return allResults.subList(start, end);
     }
+    
+    // 스케줄링을 위한 빈 자리가 있는 경기장 검색
+    @Query("SELECT s FROM Stadium s WHERE " +
+           "s.status = com.side.football_project.domain.stadium.entity.StadiumStatus.AVAILABLE AND " +
+           "s.capacity > (SELECT COUNT(r) FROM Reservation r WHERE r.stadium = s AND r.status IN ('PENDING', 'CONFIRMED'))")
+    List<Stadium> findAvailableStadiumsWithSpots();
 }

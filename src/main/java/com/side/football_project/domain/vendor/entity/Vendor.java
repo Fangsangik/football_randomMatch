@@ -18,7 +18,9 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "vendors")
 public class Vendor {
-    
+
+
+    //TODO : S3 이미지 업로드 기능 추가 필요
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

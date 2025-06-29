@@ -1,25 +1,14 @@
 package com.side.football_project.domain.vendor.service;
 
-import com.side.football_project.domain.admin.entity.Admin;
-import com.side.football_project.domain.vendor.dto.UpdateVendorRequestDto;
-import com.side.football_project.domain.vendor.dto.UpdateVendorResponseDto;
-import com.side.football_project.domain.stadium.dto.StadiumResponseDto;
-import com.side.football_project.domain.stadium.entity.Stadium;
-import com.side.football_project.domain.stadium.repository.StadiumRepository;
-import com.side.football_project.domain.user.type.UserRole;
-import com.side.football_project.domain.vendor.dto.VendorRequestDto;
-import com.side.football_project.domain.vendor.dto.VendorResponseDto;
+import com.side.football_project.domain.vendor.dto.*;
 import com.side.football_project.domain.vendor.entity.Vendor;
 import com.side.football_project.domain.vendor.repository.VendorRepository;
 import com.side.football_project.domain.vendor.type.VendorStatus;
 import com.side.football_project.global.common.exception.CustomException;
-import com.side.football_project.global.common.exception.type.AdminErrorCode;
 import com.side.football_project.global.common.exception.type.VendorErrorCode;
 import com.side.football_project.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +25,6 @@ public class VendorServiceImpl implements VendorService {
     private final VendorRepository vendorRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
-    private final StadiumRepository stadiumRepository;
 
     @Transactional
     @Override
@@ -82,13 +70,6 @@ public class VendorServiceImpl implements VendorService {
         return jwtProvider.createToken(email);
     }
     
-    @Transactional(readOnly = true)
-    @Override
-    public List<VendorResponseDto> getVendorsByStatus(VendorStatus status) {
-        return vendorRepository.findByStatusOrderByAppliedAtDesc(status).stream()
-                .map(VendorResponseDto::toDto)
-                .collect(Collectors.toList());
-    }
     
     @Transactional(readOnly = true)
     @Override
@@ -106,43 +87,6 @@ public class VendorServiceImpl implements VendorService {
     }
     
 
-    // Admin 타입 오버로딩 메서드들
-    @Transactional
-    @Override
-    public void approveVendor(Long vendorId, Admin admin) {
-        validateAdmin(admin);
-
-        Vendor vendor = vendorRepository.findById(vendorId)
-                .orElseThrow(() -> new RuntimeException("업체를 찾을 수 없습니다."));
-
-        // 업체 승인
-        vendor.approve();
-        vendorRepository.save(vendor);
-    }
-
-    @Transactional
-    @Override
-    public void rejectVendor(Long vendorId, String reason, Admin admin) {
-        validateAdmin(admin);
-
-        Vendor vendor = vendorRepository.findById(vendorId)
-                .orElseThrow(() -> new RuntimeException("업체를 찾을 수 없습니다."));
-
-        vendor.reject(reason);
-        vendorRepository.save(vendor);
-    }
-
-    // Paging 처리
-    @Transactional(readOnly = true)
-    @Override
-    public Page<VendorResponseDto> getAllVendorApplications(Admin admin, int page, int size) {
-        validateAdmin(admin);
-
-        Pageable pageable = Pageable.ofSize(size).withPage(page);
-
-        return vendorRepository.findAll(pageable)
-                .map(VendorResponseDto::toDto);
-    }
 
     @Transactional
     @Override
@@ -158,15 +102,16 @@ public class VendorServiceImpl implements VendorService {
         return UpdateVendorResponseDto.toDto(vendor);
     }
 
-    private void validateAdmin(Admin admin) {
-        if (UserRole.VENDOR.equals(admin.getRole())) {
-            throw new CustomException(AdminErrorCode.ADMIN_ACCESS_DENIED);
-        }
-    }
+    @Transactional
+    @Override
+    public GetMyApplyStatusDto getMyApplyStatus(Vendor vendor) {
+        // 벤더의 상태를 조회
+        VendorStatus status = vendor.getStatus();
 
-    private void validateVendor(Vendor vendor) {
-        if (UserRole.VENDOR.equals(vendor.getRole())) {
-            throw new CustomException(VendorErrorCode.VENDOR_NOT_FOUND);
-        }
+        // 상태에 따라 DTO 생성
+        return GetMyApplyStatusDto.builder()
+                .vendorStatus(vendor.getStatus())
+                .message("업체 신청 상태 조회 성공")
+                .build();
     }
 }
