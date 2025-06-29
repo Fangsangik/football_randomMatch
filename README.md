@@ -426,6 +426,7 @@ public String uploadFile(MultipartFile file, String fileName) {
 - [ ] 캐싱 전략 확장
 - [ ] 실시간 채팅 기능
 - [ ] 모바일 앱 개발
+- [ ] Gemini AI 기능 확대
 
 ## 📞 문의
 프로젝트에 대한 문의사항이 있으시면 언제든 연락해주세요.
